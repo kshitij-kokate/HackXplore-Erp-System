@@ -1,0 +1,279 @@
+{% extends 'dashboard_layout.html' %}
+
+{% block title %}GitHub Integration{% endblock %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">GitHub Integration</h2>
+        <button type="button" class="btn btn-primary" id="connectGithubBtn">Connect GitHub</button>
+    </div>
+
+    <div class="card mb-4 bg-dark border-0">
+        <div class="card-body p-3">
+            <p class="text-light mb-0">Connect your GitHub repositories to integrate programming projects, track student submissions, and provide feedback directly within the web platform. Students can submit their code for your assessment, and track progress.</p>
+        </div>
+    </div>
+
+    <!-- Repository List -->
+    <div class="card bg-dark border-0 mb-4">
+        <div class="card-header d-flex justify-content-between align-items-center bg-dark border-bottom border-secondary">
+            <h6 class="mb-0">Repository Name</h6>
+            <h6 class="mb-0">Repository URL</h6>
+            <h6 class="mb-0">Last Sync</h6>
+            <div>Actions</div>
+        </div>
+        <div class="card-body p-0">
+            <div class="list-group list-group-flush bg-dark rounded-0">
+                {% for i in range(3) %}
+                <div class="list-group-item bg-dark border-bottom border-secondary d-flex justify-content-between align-items-center py-3">
+                    <div class="fw-semibold">Data Structures Final Project</div>
+                    <a href="https://github.com/yourname/yourproject{{ i + 1 }}" target="_blank" class="text-info">https://github.com/yourname/yourproject{{ i + 1 }}</a>
+                    <div>January 24, 2025</div>
+                    <div>
+                        <button class="btn btn-sm btn-primary me-1"><i class="bi bi-eye"></i></button>
+                        <button class="btn btn-sm btn-danger"><i class="bi bi-trash"></i></button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Selection Form -->
+    <div class="card bg-dark border-0 mb-4">
+        <div class="card-body">
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label for="courseSelect" class="form-label">Course</label>
+                    <select class="form-select bg-dark text-light border-secondary" id="courseSelect">
+                        <option selected>Select Course</option>
+                        {% for course in courses %}
+                        <option value="{{ course.id }}">{{ course.name }}</option>
+                        {% endfor %}
+                        {% if not courses %}
+                        <option value="1">Data Structures</option>
+                        <option value="2">Algorithms</option>
+                        <option value="3">Database Management</option>
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="assignmentSelect" class="form-label">Assignment</label>
+                    <select class="form-select bg-dark text-light border-secondary" id="assignmentSelect">
+                        <option selected>Select Assignment</option>
+                        {% for assignment in assignments %}
+                        <option value="{{ assignment.id }}">{{ assignment.title }}</option>
+                        {% endfor %}
+                        {% if not assignments %}
+                        <option value="1">Midterm Project</option>
+                        <option value="2">Final Project</option>
+                        <option value="3">Weekly Assignment 3</option>
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="repositorySelect" class="form-label">Repository</label>
+                    <select class="form-select bg-dark text-light border-secondary" id="repositorySelect">
+                        <option selected>Select Repository</option>
+                        {% for repo in repositories %}
+                        <option value="{{ repo.id }}">{{ repo.name }}</option>
+                        {% endfor %}
+                        {% if not repositories %}
+                        <option value="1">Data Structures Project</option>
+                        <option value="2">Algorithms Project</option>
+                        <option value="3">Final Project</option>
+                        {% endif %}
+                    </select>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end mt-3">
+                <button class="btn btn-primary">Assign Repository</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Review Section -->
+    <div class="card bg-dark border-0 mb-4">
+        <div class="card-body">
+            <label for="githubUrlInput" class="form-label">GitHub Repository URL</label>
+            <div class="input-group mb-3">
+                <input type="text" class="form-control bg-dark text-light border-secondary" id="githubUrlInput" placeholder="e.g., https://github.com/yourname/yourproject" value="https://github.com/github/opensource.guide">
+                <div class="form-check ms-3 d-flex align-items-center">
+                    <input class="form-check-input" type="checkbox" id="analyzeAllCheckbox">
+                    <label class="form-check-label ms-2" for="analyzeAllCheckbox">
+                        Show only important submissions
+                    </label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Code Analysis Results -->
+    <div class="card bg-dark border-0 mb-4">
+        <div class="card-body">
+            <div class="mb-4">
+                <pre class="bg-dark text-light p-3 border border-secondary rounded"><code>// Path: /src/index.js (line 35)
+function calculateGrade(scores) {
+  if (!Array.isArray(scores) || scores.length === 0) {
+    return 'Invalid input';
+  }
+  
+  const sum = scores.reduce((total, score) => {
+    return total + score;
+  }, 0);
+  
+  const average = sum / scores.length;
+  
+  if (average >= 90) {
+    return 'A';
+  } else if (average >= 80) {
+    return 'B';
+  } else if (average >= 70) {
+    return 'C';
+  } else if (average >= 60) {
+    return 'D';
+  } else {
+    return 'F';
+  }
+}</code></pre>
+            </div>
+            
+            <!-- Code Feedback Section -->
+            <div>
+                <h5 class="text-primary">Code Feedback:</h5>
+                <div class="progress mt-3 mb-2">
+                    <div class="progress-bar bg-success" style="width: 85%"></div>
+                </div>
+                <div class="d-flex justify-content-between text-muted small mb-3">
+                    <span>Code Quality</span>
+                    <span>85%</span>
+                </div>
+                
+                <div class="progress mt-2 mb-2">
+                    <div class="progress-bar bg-info" style="width: 90%"></div>
+                </div>
+                <div class="d-flex justify-content-between text-muted small mb-3">
+                    <span>Correctness</span>
+                    <span>90%</span>
+                </div>
+                
+                <div class="progress mt-2 mb-2">
+                    <div class="progress-bar bg-warning" style="width: 70%"></div>
+                </div>
+                <div class="d-flex justify-content-between text-muted small mb-3">
+                    <span>Efficiency</span>
+                    <span>70%</span>
+                </div>
+                
+                <div class="card bg-dark border-secondary mb-4">
+                    <div class="card-body">
+                        <h6 class="text-light">Performance Observation:</h6>
+                        <p class="text-light">The algorithm has O(n) time complexity which is optimal for this problem. However, consider using array methods like reduce for simplicity.</p>
+                        
+                        <h6 class="text-warning mt-3">Recommendations:</h6>
+                        <p class="text-light">Consider adding input validation for individual scores within a valid range (0-100). This will improve robustness.</p>
+                        
+                        <h6 class="text-success mt-3">Strengths:</h6>
+                        <p class="text-light">Good error handling for edge cases like empty arrays. Clear and well-structured code with proper indentation.</p>
+                        
+                        <h6 class="text-info mt-3">Suggestion Points:</h6>
+                        <p class="text-light">Your implementation of calculateGrade would be more versatile if it also accepted objects with score properties.</p>
+                    </div>
+                </div>
+                
+                <div class="d-flex justify-content-end">
+                    <button class="btn btn-primary">Send Feedback</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Analytics Summary -->
+    <div class="card bg-dark border-0 mb-4">
+        <div class="card-body">
+            <h5 class="mb-3">Submission Stats</h5>
+            <div class="d-flex flex-wrap">
+                <div class="me-4 mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="me-2"><i class="bi bi-check-circle text-success"></i></div>
+                        <div>
+                            <div class="small text-muted">Automatic tests</div>
+                            <div class="fw-bold">All tests passing</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="me-4 mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="me-2"><i class="bi bi-code-square text-primary"></i></div>
+                        <div>
+                            <div class="small text-muted">Code formatting</div>
+                            <div class="fw-bold">No formatting issues</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="me-4 mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="me-2"><i class="bi bi-exclamation-triangle text-warning"></i></div>
+                        <div>
+                            <div class="small text-muted">Warnings</div>
+                            <div class="fw-bold">3 minor warnings</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex align-items-center">
+                        <div class="me-2"><i class="bi bi-git text-info"></i></div>
+                        <div>
+                            <div class="small text-muted">Commit history</div>
+                            <div class="fw-bold">12 commits</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Load connected repositories
+        function loadConnectedRepositories() {
+            // This would be an AJAX call in a real implementation
+            console.log('Loading repositories...');
+        }
+
+        // Handle "Connect GitHub" button click
+        document.getElementById('connectGithubBtn').addEventListener('click', function() {
+            // In a real implementation, this would redirect to GitHub OAuth
+            showAlert('GitHub integration is simulated for demonstration purposes.', 'info');
+        });
+
+        // Initialize the page
+        loadConnectedRepositories();
+
+        // Utility function to show alerts
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.createElement('div');
+            alertContainer.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+            alertContainer.setAttribute('role', 'alert');
+            alertContainer.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            document.body.appendChild(alertContainer);
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                const bsAlert = new bootstrap.Alert(alertContainer);
+                bsAlert.close();
+            }, 5000);
+        }
+    });
+</script>
+{% endblock %}

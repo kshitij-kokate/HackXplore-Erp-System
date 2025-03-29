@@ -1,0 +1,763 @@
+{% extends 'dashboard_layout.html' %}
+
+{% block title %}AI Teaching Assistant{% endblock %}
+
+{% block extra_css %}
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">AI Teaching Assistant</h2>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-3 mb-4">
+            <!-- Course Selection & Tools -->
+            <div class="card bg-dark border-0 mb-4">
+                <div class="card-header bg-dark border-bottom border-secondary">
+                    <h5 class="mb-0">Course Context</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label for="courseSelect" class="form-label">Select Course</label>
+                        <select class="form-select bg-dark text-light border-secondary" id="courseSelect">
+                            <option selected disabled>Select a course</option>
+                            {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.name }}</option>
+                            {% endfor %}
+                            {% if not courses %}
+                            <option value="1">Data Structures</option>
+                            <option value="2">Algorithms</option>
+                            <option value="3">Database Management</option>
+                            <option value="4">Machine Learning</option>
+                            <option value="5">Web Development</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <small>Selecting a course will provide the AI with context about the course material, helping it give more relevant responses.</small>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="card bg-dark border-0 mb-4">
+                <div class="card-header bg-dark border-bottom border-secondary">
+                    <h5 class="mb-0">Tools</h5>
+                </div>
+                <div class="card-body">
+                    <button class="btn btn-primary w-100 mb-3" id="generateQuizBtn">
+                        <i class="bi bi-question-circle me-2"></i> Generate Quiz
+                    </button>
+                    <button class="btn btn-outline-light w-100 mb-3" id="codeExplanationBtn">
+                        <i class="bi bi-code-slash me-2"></i> Code Explanation
+                    </button>
+                    <button class="btn btn-outline-light w-100" id="conceptsExplanationBtn">
+                        <i class="bi bi-book me-2"></i> Concepts Explanation
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card bg-dark border-0">
+                <div class="card-header bg-dark border-bottom border-secondary">
+                    <h5 class="mb-0">History</h5>
+                </div>
+                <div class="card-body p-2">
+                    <div class="list-group list-group-flush bg-dark">
+                        <button class="list-group-item list-group-item-action bg-dark border-secondary text-light py-2">
+                            <div class="d-flex w-100 justify-content-between">
+                                <small class="mb-1 text-truncate">Data Structures Quiz</small>
+                                <small class="text-muted">3d</small>
+                            </div>
+                        </button>
+                        <button class="list-group-item list-group-item-action bg-dark border-secondary text-light py-2">
+                            <div class="d-flex w-100 justify-content-between">
+                                <small class="mb-1 text-truncate">Binary Tree Explanation</small>
+                                <small class="text-muted">5d</small>
+                            </div>
+                        </button>
+                        <button class="list-group-item list-group-item-action bg-dark border-secondary text-light py-2">
+                            <div class="d-flex w-100 justify-content-between">
+                                <small class="mb-1 text-truncate">SQL Joins Help</small>
+                                <small class="text-muted">1w</small>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <!-- Chat Interface -->
+            <div class="card bg-dark border-0" style="height: calc(100vh - 150px);">
+                <div class="card-header bg-dark border-bottom border-secondary d-flex justify-content-between align-items-center">
+                    <div>
+                        <h5 class="mb-0">Chat</h5>
+                        <small class="text-muted" id="chatContext">No course selected</small>
+                    </div>
+                    <div>
+                        <button class="btn btn-sm btn-outline-secondary me-2" id="clearChatBtn">
+                            <i class="bi bi-trash"></i> Clear Chat
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary" id="exportChatBtn">
+                            <i class="bi bi-download"></i> Export
+                        </button>
+                    </div>
+                </div>
+                <div class="card-body p-0 d-flex flex-column" style="height: 100%;">
+                    <div class="chat-messages p-3 flex-grow-1 overflow-auto" id="chatMessages">
+                        <!-- System welcome message -->
+                        <div class="chat-message system-message mb-3">
+                            <div class="chat-message-content">
+                                <div class="alert alert-secondary mb-0">
+                                    <p class="mb-0">👋 Welcome to the AI Teaching Assistant. I'm here to help you with course-related questions, explanations, or generating practice materials. How can I assist you today?</p>
+                                </div>
+                                <div class="chat-message-time small text-muted mt-1">
+                                    Today, 10:00 AM
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Initial AI message -->
+                        <div class="chat-message ai-message mb-3">
+                            <div class="d-flex">
+                                <div class="chat-avatar bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-robot text-light"></i>
+                                </div>
+                                <div class="chat-message-content">
+                                    <div class="card bg-primary bg-opacity-10 border-0">
+                                        <div class="card-body py-2">
+                                            <p class="mb-0">Hello! I'm your AI teaching assistant for this course. You can ask me questions about the material, request explanations, or even generate practice quizzes to test your knowledge.</p>
+                                            <p class="mb-0">For the best experience, please select a course from the dropdown menu on the left to provide me with more context.</p>
+                                        </div>
+                                    </div>
+                                    <div class="chat-message-time small text-muted mt-1">
+                                        Today, 10:01 AM
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Example user message -->
+                        <div class="chat-message user-message mb-3">
+                            <div class="d-flex flex-row-reverse">
+                                <div class="chat-avatar bg-secondary rounded-circle d-flex align-items-center justify-content-center ms-2" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-person-fill text-light"></i>
+                                </div>
+                                <div class="chat-message-content">
+                                    <div class="card bg-secondary bg-opacity-10 border-0">
+                                        <div class="card-body py-2">
+                                            <p class="mb-0">Can you explain how binary search trees work?</p>
+                                        </div>
+                                    </div>
+                                    <div class="chat-message-time small text-muted mt-1 text-end">
+                                        Today, 10:02 AM
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Example AI response -->
+                        <div class="chat-message ai-message mb-3">
+                            <div class="d-flex">
+                                <div class="chat-avatar bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-robot text-light"></i>
+                                </div>
+                                <div class="chat-message-content">
+                                    <div class="card bg-primary bg-opacity-10 border-0">
+                                        <div class="card-body py-2">
+                                            <p class="mb-2"><strong>Binary Search Trees (BST)</strong></p>
+                                            <p class="mb-2">A Binary Search Tree is a node-based binary tree data structure that has the following properties:</p>
+                                            <ul>
+                                                <li>The left subtree of a node contains only nodes with keys less than the node's key.</li>
+                                                <li>The right subtree of a node contains only nodes with keys greater than the node's key.</li>
+                                                <li>Both the left and right subtrees must also be binary search trees.</li>
+                                            </ul>
+                                            <p class="mb-2">This property makes it efficient for searching, as on average, you only need to look at log(n) elements to find a particular element.</p>
+                                            <p class="mb-0">Would you like to see an example of how to implement a BST in code, or would you prefer more information about operations like insertion, deletion, or traversal?</p>
+                                        </div>
+                                    </div>
+                                    <div class="chat-message-time small text-muted mt-1">
+                                        Today, 10:03 AM
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Typing indicator (initially hidden) -->
+                    <div class="typing-indicator d-none p-3 border-top border-secondary" id="typingIndicator">
+                        <div class="d-flex align-items-center">
+                            <div class="chat-avatar bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 30px; height: 30px;">
+                                <i class="bi bi-robot text-light small"></i>
+                            </div>
+                            <div class="typing-dots">
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                                <span class="dot"></span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat input -->
+                    <div class="chat-input border-top border-secondary p-3">
+                        <form id="chatForm">
+                            <div class="input-group">
+                                <textarea class="form-control bg-dark text-light border-secondary" id="messageInput" rows="2" placeholder="Type your message here..."></textarea>
+                                <button type="submit" class="btn btn-primary">
+                                    <i class="bi bi-send"></i>
+                                </button>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center mt-2">
+                                <div>
+                                    <button type="button" class="btn btn-sm btn-link text-muted text-decoration-none">
+                                        <i class="bi bi-paperclip"></i> Attach
+                                    </button>
+                                    <button type="button" class="btn btn-sm btn-link text-muted text-decoration-none">
+                                        <i class="bi bi-code"></i> Code
+                                    </button>
+                                </div>
+                                <small class="text-muted">Press Enter to send, Shift+Enter for a new line</small>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Quiz Generator Modal -->
+<div class="modal fade" id="quizGeneratorModal" tabindex="-1" aria-labelledby="quizGeneratorModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="quizGeneratorModalLabel">Generate Quiz</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="quizGeneratorForm">
+                    <div class="mb-3">
+                        <label for="quizSubject" class="form-label">Subject</label>
+                        <input type="text" class="form-control bg-dark text-light border-secondary" id="quizSubject" placeholder="e.g., Binary Trees, SQL Joins, etc.">
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="quizDifficulty" class="form-label">Difficulty</label>
+                            <select class="form-select bg-dark text-light border-secondary" id="quizDifficulty">
+                                <option value="easy">Easy</option>
+                                <option value="medium" selected>Medium</option>
+                                <option value="hard">Hard</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="quizQuestionCount" class="form-label">Number of Questions</label>
+                            <input type="number" class="form-control bg-dark text-light border-secondary" id="quizQuestionCount" min="1" max="10" value="5">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quizType" class="form-label">Quiz Type</label>
+                        <select class="form-select bg-dark text-light border-secondary" id="quizType">
+                            <option value="multiple-choice" selected>Multiple Choice</option>
+                            <option value="true-false">True/False</option>
+                            <option value="short-answer">Short Answer</option>
+                            <option value="coding">Coding Problems</option>
+                            <option value="mixed">Mixed</option>
+                        </select>
+                    </div>
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="includeAnswersCheck" checked>
+                        <label class="form-check-label" for="includeAnswersCheck">
+                            Include Answers and Explanations
+                        </label>
+                    </div>
+                </form>
+                
+                <div id="quizPreview" class="d-none">
+                    <hr>
+                    <h6>Quiz Preview</h6>
+                    <div id="quizContent" class="card bg-dark border-secondary p-3">
+                        <!-- Quiz content will be inserted here -->
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="generateQuizSubmitBtn">Generate Quiz</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize variables
+    const chatMessages = document.getElementById('chatMessages');
+    const chatForm = document.getElementById('chatForm');
+    const messageInput = document.getElementById('messageInput');
+    const courseSelect = document.getElementById('courseSelect');
+    const chatContext = document.getElementById('chatContext');
+    const typingIndicator = document.getElementById('typingIndicator');
+    const clearChatBtn = document.getElementById('clearChatBtn');
+    const exportChatBtn = document.getElementById('exportChatBtn');
+    
+    // Tool buttons
+    const generateQuizBtn = document.getElementById('generateQuizBtn');
+    const codeExplanationBtn = document.getElementById('codeExplanationBtn');
+    const conceptsExplanationBtn = document.getElementById('conceptsExplanationBtn');
+    
+    // Quiz generator
+    const generateQuizModal = new bootstrap.Modal(document.getElementById('quizGeneratorModal'));
+    const generateQuizSubmitBtn = document.getElementById('generateQuizSubmitBtn');
+    
+    // Course selection
+    courseSelect.addEventListener('change', function() {
+        const selectedCourse = this.options[this.selectedIndex].text;
+        chatContext.textContent = `Context: ${selectedCourse}`;
+        
+        // Add system message about course selection
+        appendSystemMessage(`Course context set to: ${selectedCourse}. The AI assistant will now have knowledge of this course's content and structure.`);
+        
+        // Scroll to bottom
+        scrollToBottom();
+    });
+    
+    // Send message on form submit
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const message = messageInput.value.trim();
+        if (message) {
+            sendMessage(message);
+            messageInput.value = '';
+        }
+    });
+    
+    // Handle Enter key press
+    messageInput.addEventListener('keydown', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            chatForm.dispatchEvent(new Event('submit'));
+        }
+    });
+    
+    // Clear chat
+    clearChatBtn.addEventListener('click', function() {
+        // Clear all messages except the first system message
+        const messages = chatMessages.querySelectorAll('.chat-message');
+        
+        // Keep only the first two messages (system welcome and AI intro)
+        for (let i = 2; i < messages.length; i++) {
+            messages[i].remove();
+        }
+    });
+    
+    // Export chat
+    exportChatBtn.addEventListener('click', function() {
+        // Get all messages
+        const messages = chatMessages.querySelectorAll('.chat-message');
+        let chatText = '';
+        
+        // Format each message
+        messages.forEach(message => {
+            const isAI = message.classList.contains('ai-message');
+            const isUser = message.classList.contains('user-message');
+            const isSystem = message.classList.contains('system-message');
+            
+            let sender = '';
+            if (isAI) sender = 'AI Assistant';
+            if (isUser) sender = 'You';
+            if (isSystem) sender = 'System';
+            
+            const content = message.querySelector('.card-body, .alert').textContent.trim();
+            const time = message.querySelector('.chat-message-time').textContent.trim();
+            
+            chatText += `${sender} (${time}):\n${content}\n\n`;
+        });
+        
+        // Create and download file
+        const blob = new Blob([chatText], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'chat-export.txt';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+        
+        // Show alert
+        showAlert('Chat exported successfully!', 'success');
+    });
+    
+    // Generate Quiz button
+    generateQuizBtn.addEventListener('click', function() {
+        generateQuizModal.show();
+    });
+    
+    // Generate Quiz Submit button
+    generateQuizSubmitBtn.addEventListener('click', function() {
+        const subject = document.getElementById('quizSubject').value.trim();
+        const difficulty = document.getElementById('quizDifficulty').value;
+        const questionCount = document.getElementById('quizQuestionCount').value;
+        const quizType = document.getElementById('quizType').value;
+        const includeAnswers = document.getElementById('includeAnswersCheck').checked;
+        
+        if (!subject) {
+            showAlert('Please enter a subject for the quiz', 'warning');
+            return;
+        }
+        
+        // Close the modal
+        generateQuizModal.hide();
+        
+        // Send a message to the chat
+        sendMessage(`Generate a ${difficulty} ${quizType} quiz about ${subject} with ${questionCount} questions${includeAnswers ? ' and include answers' : ''}.`);
+    });
+    
+    // Code Explanation button
+    codeExplanationBtn.addEventListener('click', function() {
+        // Insert a prompt into the message input
+        messageInput.value = 'Please explain how this code works:\n```\n// Paste your code here\n```';
+        messageInput.focus();
+    });
+    
+    // Concepts Explanation button
+    conceptsExplanationBtn.addEventListener('click', function() {
+        // Insert a prompt into the message input
+        messageInput.value = 'Can you explain the concept of [topic] in simple terms?';
+        messageInput.focus();
+        // Select the placeholder text for easy replacement
+        const start = messageInput.value.indexOf('[');
+        const end = messageInput.value.indexOf(']') + 1;
+        messageInput.setSelectionRange(start, end);
+    });
+    
+    // Function to send a message
+    function sendMessage(message) {
+        // Append user message to chat
+        appendUserMessage(message);
+        
+        // Show typing indicator
+        typingIndicator.classList.remove('d-none');
+        
+        // Scroll to bottom
+        scrollToBottom();
+        
+        // Simulate AI response after a delay (in a real app, this would be an API call)
+        setTimeout(() => {
+            // Hide typing indicator
+            typingIndicator.classList.add('d-none');
+            
+            // Generate AI response based on user message
+            let aiResponse = '';
+            
+            if (message.includes('generate') && message.includes('quiz')) {
+                // For quiz generation
+                aiResponse = generateMockQuiz(message);
+            } else if (message.includes('binary search trees')) {
+                // We already have this response in the HTML
+                return;
+            } else {
+                // Generic response
+                aiResponse = `I understand you're asking about "${message}". As an AI teaching assistant, I'm here to help with your questions about the course material, explanations of concepts, and to generate practice materials.
+
+Since this is a demo, I'll provide a simulated response. In a real implementation, I would give you detailed information about your specific query, drawing from the course materials and educational resources.
+
+Would you like to know more about a specific topic, or would you prefer to try using one of the tools like quiz generation?`;
+            }
+            
+            // Append AI response to chat
+            appendAIMessage(aiResponse);
+            
+            // Scroll to bottom
+            scrollToBottom();
+        }, 1500);
+    }
+    
+    // Function to append user message to chat
+    function appendUserMessage(message) {
+        const formattedMessage = formatMessageText(message);
+        const currentTime = getCurrentTime();
+        
+        const messageHTML = `
+        <div class="chat-message user-message mb-3">
+            <div class="d-flex flex-row-reverse">
+                <div class="chat-avatar bg-secondary rounded-circle d-flex align-items-center justify-content-center ms-2" style="width: 40px; height: 40px;">
+                    <i class="bi bi-person-fill text-light"></i>
+                </div>
+                <div class="chat-message-content">
+                    <div class="card bg-secondary bg-opacity-10 border-0">
+                        <div class="card-body py-2">
+                            <p class="mb-0">${formattedMessage}</p>
+                        </div>
+                    </div>
+                    <div class="chat-message-time small text-muted mt-1 text-end">
+                        ${currentTime}
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+        
+        chatMessages.insertAdjacentHTML('beforeend', messageHTML);
+    }
+    
+    // Function to append AI message to chat
+    function appendAIMessage(message) {
+        const formattedMessage = formatMessageText(message);
+        const currentTime = getCurrentTime();
+        
+        const messageHTML = `
+        <div class="chat-message ai-message mb-3">
+            <div class="d-flex">
+                <div class="chat-avatar bg-primary rounded-circle d-flex align-items-center justify-content-center me-2" style="width: 40px; height: 40px;">
+                    <i class="bi bi-robot text-light"></i>
+                </div>
+                <div class="chat-message-content">
+                    <div class="card bg-primary bg-opacity-10 border-0">
+                        <div class="card-body py-2">
+                            ${formattedMessage}
+                        </div>
+                    </div>
+                    <div class="chat-message-time small text-muted mt-1">
+                        ${currentTime}
+                    </div>
+                </div>
+            </div>
+        </div>
+        `;
+        
+        chatMessages.insertAdjacentHTML('beforeend', messageHTML);
+    }
+    
+    // Function to append system message to chat
+    function appendSystemMessage(message) {
+        const formattedMessage = formatMessageText(message);
+        const currentTime = getCurrentTime();
+        
+        const messageHTML = `
+        <div class="chat-message system-message mb-3">
+            <div class="chat-message-content">
+                <div class="alert alert-secondary mb-0">
+                    <p class="mb-0">${formattedMessage}</p>
+                </div>
+                <div class="chat-message-time small text-muted mt-1">
+                    ${currentTime}
+                </div>
+            </div>
+        </div>
+        `;
+        
+        chatMessages.insertAdjacentHTML('beforeend', messageHTML);
+    }
+    
+    // Function to format message text with basic markdown-like syntax
+    function formatMessageText(text) {
+        // Replace code blocks
+        text = text.replace(/```([^`]+)```/g, '<pre class="bg-dark text-light p-2 rounded"><code>$1</code></pre>');
+        
+        // Replace inline code
+        text = text.replace(/`([^`]+)`/g, '<code>$1</code>');
+        
+        // Replace new lines with <br>
+        text = text.replace(/\n/g, '<br>');
+        
+        return text;
+    }
+    
+    // Function to get current time in HH:MM AM/PM format
+    function getCurrentTime() {
+        const now = new Date();
+        return `Today, ${now.getHours() % 12 || 12}:${now.getMinutes().toString().padStart(2, '0')} ${now.getHours() >= 12 ? 'PM' : 'AM'}`;
+    }
+    
+    // Function to scroll chat to bottom
+    function scrollToBottom() {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+    
+    // Function to show an alert message
+    function showAlert(message, type = 'info') {
+        const alertContainer = document.createElement('div');
+        alertContainer.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+        alertContainer.setAttribute('role', 'alert');
+        alertContainer.style.zIndex = '9999';
+        alertContainer.innerHTML = `
+            ${message}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        `;
+        document.body.appendChild(alertContainer);
+        
+        // Auto-dismiss after 5 seconds
+        setTimeout(() => {
+            const bsAlert = new bootstrap.Alert(alertContainer);
+            bsAlert.close();
+        }, 5000);
+    }
+    
+    // Function to generate a mock quiz based on user input
+    function generateMockQuiz(message) {
+        // Extract quiz parameters from message
+        const isMultipleChoice = message.includes('multiple-choice') || !message.includes('true-false') && !message.includes('short-answer');
+        const difficulty = message.includes('easy') ? 'easy' : message.includes('hard') ? 'hard' : 'medium';
+        const includeAnswers = !message.includes('without answers');
+        
+        // Determine subject (very simple extraction)
+        const aboutIndex = message.indexOf('about') + 6;
+        const withIndex = message.indexOf('with', aboutIndex);
+        let subject = message.substring(aboutIndex, withIndex > aboutIndex ? withIndex : message.length).trim();
+        subject = subject.replace(/[,.]/g, '');
+        
+        if (!subject || subject === '') {
+            subject = 'Data Structures';
+        }
+        
+        // Create a quiz
+        let quiz = `<p class="mb-3"><strong>${subject} Quiz (${difficulty} difficulty)</strong></p>`;
+        
+        if (isMultipleChoice) {
+            quiz += `
+            <ol>
+                <li class="mb-3">
+                    <p>What is the time complexity of searching for an element in a binary search tree?</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q1" id="q1a">
+                        <label class="form-check-label" for="q1a">O(1)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q1" id="q1b">
+                        <label class="form-check-label" for="q1b">O(log n)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q1" id="q1c">
+                        <label class="form-check-label" for="q1c">O(n)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q1" id="q1d">
+                        <label class="form-check-label" for="q1d">O(n²)</label>
+                    </div>
+                    ${includeAnswers ? '<div class="alert alert-success mt-2"><strong>Answer:</strong> O(log n) - In a balanced binary search tree, each comparison allows us to eliminate half of the remaining tree.</div>' : ''}
+                </li>
+                <li class="mb-3">
+                    <p>Which data structure follows the LIFO (Last-In-First-Out) principle?</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q2" id="q2a">
+                        <label class="form-check-label" for="q2a">Queue</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q2" id="q2b">
+                        <label class="form-check-label" for="q2b">Stack</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q2" id="q2c">
+                        <label class="form-check-label" for="q2c">Linked List</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q2" id="q2d">
+                        <label class="form-check-label" for="q2d">Hash Table</label>
+                    </div>
+                    ${includeAnswers ? '<div class="alert alert-success mt-2"><strong>Answer:</strong> Stack - A stack follows the LIFO principle, where the last element added is the first one to be removed.</div>' : ''}
+                </li>
+                <li class="mb-3">
+                    <p>What is the worst-case time complexity of bubble sort?</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q3" id="q3a">
+                        <label class="form-check-label" for="q3a">O(n)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q3" id="q3b">
+                        <label class="form-check-label" for="q3b">O(n log n)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q3" id="q3c">
+                        <label class="form-check-label" for="q3c">O(n²)</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q3" id="q3d">
+                        <label class="form-check-label" for="q3d">O(2ⁿ)</label>
+                    </div>
+                    ${includeAnswers ? '<div class="alert alert-success mt-2"><strong>Answer:</strong> O(n²) - Bubble sort compares each pair of adjacent items and swaps them if they are in the wrong order, requiring n² comparisons in the worst case.</div>' : ''}
+                </li>
+            </ol>
+            `;
+        } else {
+            quiz += `
+            <ol>
+                <li class="mb-3">
+                    <p>True or False: A hash table provides O(1) average time complexity for search operations.</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q1" id="q1a">
+                        <label class="form-check-label" for="q1a">True</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q1" id="q1b">
+                        <label class="form-check-label" for="q1b">False</label>
+                    </div>
+                    ${includeAnswers ? '<div class="alert alert-success mt-2"><strong>Answer:</strong> True - A hash table provides O(1) average time complexity for search, insert, and delete operations, though the worst-case can be O(n).</div>' : ''}
+                </li>
+                <li class="mb-3">
+                    <p>Short answer: What algorithm would you use to find the shortest path between two nodes in an unweighted graph?</p>
+                    <input type="text" class="form-control bg-dark text-light border-secondary" placeholder="Your answer">
+                    ${includeAnswers ? '<div class="alert alert-success mt-2"><strong>Answer:</strong> Breadth-First Search (BFS) - BFS explores all neighbors at the present depth before moving to nodes at the next depth level, making it ideal for finding the shortest path in unweighted graphs.</div>' : ''}
+                </li>
+                <li class="mb-3">
+                    <p>True or False: The time complexity of binary search is O(log n).</p>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q3" id="q3a">
+                        <label class="form-check-label" for="q3a">True</label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q3" id="q3b">
+                        <label class="form-check-label" for="q3b">False</label>
+                    </div>
+                    ${includeAnswers ? '<div class="alert alert-success mt-2"><strong>Answer:</strong> True - Binary search has a time complexity of O(log n) because it divides the search interval in half with each comparison.</div>' : ''}
+                </li>
+            </ol>
+            `;
+        }
+        
+        return `<p>Here's a ${difficulty} quiz on ${subject}:</p>${quiz}<p>Would you like me to generate another quiz on a different topic or with different parameters? Or would you like to discuss any of these concepts in more detail?</p>`;
+    }
+    
+    // Initialize the chat
+    scrollToBottom();
+});
+</script>
+<style>
+.typing-dots {
+    display: inline-flex;
+}
+
+.dot {
+    width: 8px;
+    height: 8px;
+    margin: 0 4px;
+    background-color: rgba(255, 255, 255, 0.5);
+    border-radius: 50%;
+    display: inline-block;
+    animation: dot-pulse 1.5s infinite ease-in-out;
+}
+
+.dot:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.dot:nth-child(3) {
+    animation-delay: 0.4s;
+}
+
+@keyframes dot-pulse {
+    0%, 100% {
+        transform: scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: scale(1.3);
+        opacity: 1;
+    }
+}
+</style>
+{% endblock %}

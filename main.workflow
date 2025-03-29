@@ -1,0 +1,1 @@
+onRun = "./start_app.sh"

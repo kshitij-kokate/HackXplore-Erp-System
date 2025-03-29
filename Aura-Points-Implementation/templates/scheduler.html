@@ -1,0 +1,225 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart Academic Assistant - Scheduling Assistant{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-3">
+            <i class="fas fa-calendar-alt me-2"></i>
+            Scheduling Assistant
+        </h2>
+        <p class="lead">
+            Manage your academic schedule, organize meetings, and optimize your time with our intelligent scheduling tools.
+        </p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-9">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-calendar me-2"></i>
+                    Calendar
+                </h5>
+                <button class="btn btn-primary btn-sm" data-bs-toggle="modal" data-bs-target="#meeting-modal">
+                    <i class="fas fa-plus me-1"></i>
+                    New Meeting
+                </button>
+            </div>
+            <div class="card-body">
+                <div id="calendar"></div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-magic me-2"></i>
+                    Schedule Optimization
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    AI-powered suggestions to optimize your schedule.
+                </p>
+                
+                <div id="schedule-optimizations">
+                    <div class="d-flex justify-content-center my-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-pie me-2"></i>
+                    Time Allocation
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="timeAllocationChart" width="100%" height="200"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Meeting Modal -->
+<div class="modal fade" id="meeting-modal" tabindex="-1" aria-labelledby="meeting-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="meeting-modal-label">
+                    <i class="fas fa-calendar-plus me-2"></i>
+                    Schedule Meeting
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="meeting-form">
+                    <input type="hidden" id="meeting-id" name="id" value="">
+                    
+                    <div class="mb-3">
+                        <label for="meeting-title" class="form-label">Meeting Title</label>
+                        <input type="text" class="form-control" id="meeting-title" name="title" required>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="meeting-start-time" class="form-label">Start Time</label>
+                            <input type="datetime-local" class="form-control" id="meeting-start-time" name="start_time" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="meeting-end-time" class="form-label">End Time</label>
+                            <input type="datetime-local" class="form-control" id="meeting-end-time" name="end_time" required>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="meeting-description" class="form-label">Description</label>
+                        <textarea class="form-control" id="meeting-description" name="description" rows="3"></textarea>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="meeting-location" class="form-label">Location</label>
+                        <input type="text" class="form-control" id="meeting-location" name="location">
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="meeting-participants" class="form-label">Participants (User IDs, comma-separated)</label>
+                        <input type="text" class="form-control" id="meeting-participants" name="participants" placeholder="e.g., 1, 2, 3">
+                        <small class="form-text text-muted">Leave empty if this is only for you.</small>
+                    </div>
+                    
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-primary">Schedule Meeting</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Event Details Modal -->
+<div class="modal fade" id="event-details-modal" tabindex="-1" aria-labelledby="event-details-label" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="event-details-title">Event Details</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body" id="event-details-body">
+                <!-- Event details will be populated here -->
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Conflict Resolution Modal -->
+<div class="modal fade" id="conflict-modal" tabindex="-1" aria-labelledby="conflict-modal-label" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="conflict-modal-label">
+                    <i class="fas fa-exclamation-triangle me-2 text-warning"></i>
+                    Scheduling Conflicts Detected
+                </h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-warning">
+                    <i class="fas fa-info-circle me-2"></i>
+                    The proposed meeting time conflicts with existing events. Please review the conflicts and consider the suggested alternatives.
+                </div>
+                
+                <h6 class="mb-3">Conflicts:</h6>
+                <div id="conflict-list" class="mb-4">
+                    <!-- Conflicts will be populated here -->
+                </div>
+                
+                <h6 class="mb-3">Suggested Alternative Times:</h6>
+                <div id="suggestion-list">
+                    <!-- Suggestions will be populated here -->
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Keep Original Time</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/scheduler.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Time allocation chart
+        const ctx = document.getElementById('timeAllocationChart').getContext('2d');
+        
+        const timeAllocationChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Classes', 'Research', 'Meetings', 'Study', 'Free Time'],
+                datasets: [{
+                    data: [30, 25, 15, 20, 10],
+                    backgroundColor: [
+                        'rgba(13, 110, 253, 0.7)',
+                        'rgba(25, 135, 84, 0.7)',
+                        'rgba(220, 53, 69, 0.7)',
+                        'rgba(255, 193, 7, 0.7)',
+                        'rgba(13, 202, 240, 0.7)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                        labels: {
+                            font: {
+                                size: 11
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

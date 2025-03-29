@@ -1,0 +1,368 @@
+{% extends "layout.html" %}
+
+{% block page_title %}Learning Analytics{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group me-2">
+    <button type="button" class="btn btn-sm btn-outline-secondary" id="generateReportBtn">
+        <i class="fas fa-file-alt me-1"></i> Generate Report
+    </button>
+    <button type="button" class="btn btn-sm btn-outline-secondary">
+        <i class="fas fa-download me-1"></i> Export Data
+    </button>
+</div>
+<div class="btn-group">
+    <button type="button" class="btn btn-sm btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+        <i class="fas fa-calendar me-1"></i> This Semester
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+        <li><a class="dropdown-item" href="#">This Week</a></li>
+        <li><a class="dropdown-item" href="#">This Month</a></li>
+        <li><a class="dropdown-item active" href="#">This Semester</a></li>
+        <li><a class="dropdown-item" href="#">This Year</a></li>
+        <li><hr class="dropdown-divider"></li>
+        <li><a class="dropdown-item" href="#">Custom Range...</a></li>
+    </ul>
+</div>
+{% endblock %}
+
+{% block content %}
+<!-- AI-Generated Report Container -->
+<div class="card mb-4 d-none" id="aiReportContainer">
+    <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+        <h5 class="mb-0"><i class="fas fa-robot me-2"></i>AI-Generated Analytics Report</h5>
+        <button type="button" class="btn-close btn-close-white" aria-label="Close" onclick="document.getElementById('aiReportContainer').classList.add('d-none')"></button>
+    </div>
+    <div class="card-body" id="aiReportContent">
+        <!-- AI report content will be loaded dynamically -->
+    </div>
+</div>
+
+<!-- Filter and Selection Options -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-4">
+                <label for="coursesSelect" class="form-label">Courses</label>
+                <select class="form-select" id="coursesSelect" multiple>
+                    <option value="all" selected>All Courses</option>
+                    <option value="cs301">Data Structures (CS301)</option>
+                    <option value="cs302">Database Management (CS302)</option>
+                    <option value="cs303">Web Development (CS303)</option>
+                    <option value="cs405">Cybersecurity (CS405)</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="metricsSelect" class="form-label">Metrics</label>
+                <select class="form-select" id="metricsSelect" multiple>
+                    <option value="grades" selected>Grades</option>
+                    <option value="attendance" selected>Attendance</option>
+                    <option value="participation" selected>Participation</option>
+                    <option value="completion" selected>Assignment Completion</option>
+                </select>
+            </div>
+            <div class="col-md-4">
+                <label for="studentsSelect" class="form-label">Student Groups</label>
+                <select class="form-select" id="studentsSelect">
+                    <option value="all" selected>All Students</option>
+                    <option value="atrisk">At-Risk Students</option>
+                    <option value="topperformers">Top Performers</option>
+                    <option value="custom">Custom Group...</option>
+                </select>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Overview Dashboard -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-muted mb-0">Average Grade</h6>
+                        <h3 class="mt-2 mb-0">80.6%</h3>
+                        <p class="text-success mb-0"><small><i class="fas fa-arrow-up me-1"></i>2.1% from last semester</small></p>
+                    </div>
+                    <div class="stats-icon bg-primary bg-opacity-10 text-primary">
+                        <i class="fas fa-graduation-cap"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-muted mb-0">Attendance Rate</h6>
+                        <h3 class="mt-2 mb-0">87.4%</h3>
+                        <p class="text-danger mb-0"><small><i class="fas fa-arrow-down me-1"></i>3.2% from last semester</small></p>
+                    </div>
+                    <div class="stats-icon bg-success bg-opacity-10 text-success">
+                        <i class="fas fa-calendar-check"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-muted mb-0">Completion Rate</h6>
+                        <h3 class="mt-2 mb-0">92.3%</h3>
+                        <p class="text-success mb-0"><small><i class="fas fa-arrow-up me-1"></i>5.7% from last semester</small></p>
+                    </div>
+                    <div class="stats-icon bg-warning bg-opacity-10 text-warning">
+                        <i class="fas fa-tasks"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-4">
+        <div class="card dashboard-card h-100">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="card-title text-muted mb-0">At-Risk Students</h6>
+                        <h3 class="mt-2 mb-0">10</h3>
+                        <p class="text-warning mb-0"><small><i class="fas fa-exclamation-triangle me-1"></i>8% of enrollment</small></p>
+                    </div>
+                    <div class="stats-icon bg-danger bg-opacity-10 text-danger">
+                        <i class="fas fa-user-shield"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 1 -->
+<div class="row mb-4">
+    <div class="col-md-8 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Performance Overview by Course</h5>
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-outline-secondary active">Bar</button>
+                    <button type="button" class="btn btn-outline-secondary">Line</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="performanceOverviewChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Student Risk Distribution</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="atRiskStudentsChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Charts Row 2 -->
+<div class="row mb-4">
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">Assignment Submission Timeline</h5>
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-outline-secondary active">Semester</button>
+                    <button type="button" class="btn btn-outline-secondary">Month</button>
+                </div>
+            </div>
+            <div class="card-body">
+                <canvas id="submissionTimelineChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card h-100">
+            <div class="card-header">
+                <h5 class="card-title mb-0">Student Engagement Metrics</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="studentEngagementChart" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Insights -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0"><i class="fas fa-lightbulb me-2 text-warning"></i>AI-Generated Insights</h5>
+    </div>
+    <div class="card-body">
+        <div class="row" id="aiInsightsList">
+            <!-- AI insights will be loaded dynamically -->
+        </div>
+    </div>
+</div>
+
+<!-- Performance Breakdowns -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Detailed Performance Breakdown</h5>
+    </div>
+    <div class="card-body p-0">
+        <table class="table table-hover mb-0">
+            <thead>
+                <tr>
+                    <th>Course</th>
+                    <th>Avg. Grade</th>
+                    <th>Attendance</th>
+                    <th>Submissions</th>
+                    <th>At-Risk</th>
+                    <th>Trends</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>Database Systems</td>
+                    <td>78%</td>
+                    <td>85%</td>
+                    <td>92%</td>
+                    <td><span class="badge bg-warning">3 students</span></td>
+                    <td><span class="text-success"><i class="fas fa-arrow-up me-1"></i>Improving</span></td>
+                </tr>
+                <tr>
+                    <td>Data Structures</td>
+                    <td>82%</td>
+                    <td>90%</td>
+                    <td>95%</td>
+                    <td><span class="badge bg-success">1 student</span></td>
+                    <td><span class="text-success"><i class="fas fa-arrow-up me-1"></i>Improving</span></td>
+                </tr>
+                <tr>
+                    <td>Web Development</td>
+                    <td>88%</td>
+                    <td>92%</td>
+                    <td>97%</td>
+                    <td><span class="badge bg-success">0 students</span></td>
+                    <td><span class="text-success"><i class="fas fa-arrow-up me-1"></i>Improving</span></td>
+                </tr>
+                <tr>
+                    <td>Machine Learning</td>
+                    <td>75%</td>
+                    <td>80%</td>
+                    <td>85%</td>
+                    <td><span class="badge bg-danger">5 students</span></td>
+                    <td><span class="text-danger"><i class="fas fa-arrow-down me-1"></i>Declining</span></td>
+                </tr>
+                <tr>
+                    <td>Computer Networks</td>
+                    <td>80%</td>
+                    <td>88%</td>
+                    <td>90%</td>
+                    <td><span class="badge bg-warning">2 students</span></td>
+                    <td><span class="text-secondary"><i class="fas fa-equals me-1"></i>Steady</span></td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Topic Analysis -->
+<div class="card mb-4">
+    <div class="card-header">
+        <h5 class="mb-0">Topic Difficulty Analysis</h5>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 mb-3">
+                <h6 class="border-bottom pb-2">Database Management</h6>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Database Design</span>
+                        <span>85%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>SQL Queries</span>
+                        <span>92%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 92%;" aria-valuenow="92" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Normalization</span>
+                        <span>65%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Transaction Processing</span>
+                        <span>72%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 72%;" aria-valuenow="72" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-3">
+                <h6 class="border-bottom pb-2">Machine Learning</h6>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Data Preprocessing</span>
+                        <span>88%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 88%;" aria-valuenow="88" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Linear Regression</span>
+                        <span>82%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 82%;" aria-valuenow="82" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Neural Networks</span>
+                        <span>58%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-danger" role="progressbar" style="width: 58%;" aria-valuenow="58" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-1">
+                        <span>Model Evaluation</span>
+                        <span>75%</span>
+                    </div>
+                    <div class="progress" style="height: 10px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/analytics.js') }}"></script>
+{% endblock %}

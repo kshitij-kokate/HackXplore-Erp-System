@@ -1,0 +1,225 @@
+/* Custom styles for Smart Academic Assistant */
+
+/* Utility classes */
+.text-truncate-2 {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.text-truncate-3 {
+    display: -webkit-box;
+    -webkit-line-clamp: 3;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+/* Main layout */
+body {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+main {
+    flex: 1;
+}
+
+/* Feature cards */
+.feature-card {
+    height: 100%;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.feature-card .card-img-top {
+    max-height: 160px;
+    object-fit: cover;
+}
+
+.feature-icon {
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+/* Dashboard stats */
+.stat-card {
+    border-left: 4px solid;
+    transition: transform 0.1s;
+}
+
+.stat-card:hover {
+    transform: translateY(-2px);
+}
+
+.stat-card.stat-primary {
+    border-left-color: var(--bs-primary);
+}
+
+.stat-card.stat-success {
+    border-left-color: var(--bs-success);
+}
+
+.stat-card.stat-info {
+    border-left-color: var(--bs-info);
+}
+
+.stat-card.stat-warning {
+    border-left-color: var(--bs-warning);
+}
+
+/* Calendar customizations */
+.fc .fc-toolbar-title {
+    font-size: 1.5rem;
+}
+
+.fc .fc-event {
+    cursor: pointer;
+}
+
+.fc .fc-event:hover {
+    filter: brightness(90%);
+}
+
+.fc-day-today {
+    background-color: rgba(var(--bs-primary-rgb), 0.05) !important;
+}
+
+/* Research paper cards */
+.paper-card {
+    transition: transform 0.2s;
+}
+
+.paper-card:hover {
+    transform: translateY(-3px);
+}
+
+.paper-abstract {
+    max-height: 120px;
+    overflow: hidden;
+    position: relative;
+}
+
+.paper-abstract::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 40px;
+    background: linear-gradient(transparent, var(--bs-body-bg));
+}
+
+/* Course cards */
+.course-level-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+}
+
+/* Profile page */
+.profile-header {
+    padding: 2rem 0;
+    margin-bottom: 2rem;
+    background-color: rgba(var(--bs-light-rgb), 0.1);
+}
+
+.profile-avatar {
+    width: 150px;
+    height: 150px;
+    background-color: var(--bs-primary);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 4rem;
+    color: white;
+    margin: 0 auto 1rem;
+}
+
+/* Search input */
+.search-input-group {
+    max-width: 500px;
+    margin: 0 auto;
+}
+
+/* Toast customization */
+.toast-container {
+    z-index: 1080;
+}
+
+/* Sidebar (for mobile) */
+@media (max-width: 991.98px) {
+    .sidebar {
+        position: fixed;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        z-index: 1030;
+        width: 280px;
+        background-color: var(--bs-body-bg);
+        transform: translateX(-100%);
+        transition: transform 0.3s ease-in-out;
+        overflow-y: auto;
+    }
+
+    .sidebar.show {
+        transform: translateX(0);
+    }
+
+    .sidebar-backdrop {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: rgba(0, 0, 0, 0.5);
+        z-index: 1020;
+        display: none;
+    }
+
+    .sidebar-backdrop.show {
+        display: block;
+    }
+}
+
+/* Animation for feature highlights */
+@keyframes highlight-pulse {
+    0% {
+        box-shadow: 0 0 0 0 rgba(var(--bs-primary-rgb), 0.7);
+    }
+    70% {
+        box-shadow: 0 0 0 10px rgba(var(--bs-primary-rgb), 0);
+    }
+    100% {
+        box-shadow: 0 0 0 0 rgba(var(--bs-primary-rgb), 0);
+    }
+}
+
+.highlight-pulse {
+    animation: highlight-pulse 2s infinite;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--bs-body-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background-color: var(--bs-secondary);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background-color: var(--bs-primary);
+}

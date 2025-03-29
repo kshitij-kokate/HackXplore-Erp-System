@@ -1,0 +1,373 @@
+{% extends 'dashboard_layout.html' %}
+
+{% block title %}Setup Face Recognition{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <div class="col-12">
+            <div class="card">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Face Recognition Setup</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-7">
+                            <div class="card mb-4">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Capture Your Face</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="webcamContainer" class="border p-3 mb-3 rounded" style="height: 400px; display: flex; align-items: center; justify-content: center; background-color: #f8f9fa;">
+                                        <video id="webcam" autoplay playsinline style="display: none; max-width: 100%; max-height: 100%;"></video>
+                                        <canvas id="faceCanvas" style="display: none; max-width: 100%; max-height: 100%;"></canvas>
+                                        <div id="webcamPlaceholder" class="text-center">
+                                            <i class="fas fa-camera fa-4x mb-3 text-secondary"></i>
+                                            <p>Click "Start Camera" to begin</p>
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="d-flex flex-wrap gap-2 mb-3">
+                                        <button id="startCameraBtn" class="btn btn-primary">
+                                            <i class="fas fa-camera me-2"></i> Start Camera
+                                        </button>
+                                        <button id="captureFaceBtn" class="btn btn-success" disabled>
+                                            <i class="fas fa-user-check me-2"></i> Capture Face
+                                        </button>
+                                        <button id="retakeBtn" class="btn btn-secondary" disabled>
+                                            <i class="fas fa-redo me-2"></i> Retake
+                                        </button>
+                                        <button id="saveFaceDataBtn" class="btn btn-info" disabled>
+                                            <i class="fas fa-save me-2"></i> Save Face Data
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="col-lg-5">
+                            <div class="card mb-4">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Setup Status</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div id="faceSetupStatus">
+                                        <div class="alert alert-warning">
+                                            <i class="fas fa-exclamation-triangle me-2"></i>
+                                            Your face data has not been set up yet.
+                                        </div>
+                                    </div>
+                                    
+                                    <div id="setupProgress" class="my-3">
+                                        <h6>Setup Progress</h6>
+                                        <ul class="list-group">
+                                            <li class="list-group-item d-flex justify-content-between align-items-center" id="cameraStep">
+                                                <span><i class="fas fa-circle me-2 text-secondary"></i> Start Camera</span>
+                                                <span class="badge bg-secondary rounded-pill" id="cameraStepStatus">Pending</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center" id="captureStep">
+                                                <span><i class="fas fa-circle me-2 text-secondary"></i> Capture Face</span>
+                                                <span class="badge bg-secondary rounded-pill" id="captureStepStatus">Pending</span>
+                                            </li>
+                                            <li class="list-group-item d-flex justify-content-between align-items-center" id="saveStep">
+                                                <span><i class="fas fa-circle me-2 text-secondary"></i> Save Face Data</span>
+                                                <span class="badge bg-secondary rounded-pill" id="saveStepStatus">Pending</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="card">
+                                <div class="card-header bg-light">
+                                    <h6 class="mb-0">Instructions</h6>
+                                </div>
+                                <div class="card-body">
+                                    <ol>
+                                        <li>Click <strong>Start Camera</strong> to enable your webcam.</li>
+                                        <li>Position your face in the camera view ensuring:
+                                            <ul>
+                                                <li>Good lighting on your face</li>
+                                                <li>Look directly at the camera</li>
+                                                <li>Avoid wearing sunglasses or hats</li>
+                                            </ul>
+                                        </li>
+                                        <li>Click <strong>Capture Face</strong> when ready.</li>
+                                        <li>If unsatisfied with the capture, click <strong>Retake</strong>.</li>
+                                        <li>Click <strong>Save Face Data</strong> to finish the setup.</li>
+                                    </ol>
+                                    
+                                    <div class="alert alert-info mt-3">
+                                        <i class="fas fa-info-circle me-2"></i>
+                                        Your face data will be used for attendance verification only.
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Alert Container -->
+<div id="alertContainer" style="position: fixed; top: 20px; right: 20px; z-index: 9999;"></div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+// Global variables
+let webcamStream = null;
+let capturedFaceData = null;
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Initialize buttons
+    document.getElementById('startCameraBtn').addEventListener('click', startCamera);
+    document.getElementById('captureFaceBtn').addEventListener('click', captureFace);
+    document.getElementById('retakeBtn').addEventListener('click', retakePhoto);
+    document.getElementById('saveFaceDataBtn').addEventListener('click', saveFaceData);
+    
+    // Check if face data already exists
+    checkExistingFaceData();
+});
+
+async function checkExistingFaceData() {
+    // In a real implementation, you would check if face data already exists
+    // For now, we'll just assume it doesn't
+    updateSetupStatus('notConfigured');
+}
+
+function startCamera() {
+    const webcamElement = document.getElementById('webcam');
+    const webcamPlaceholder = document.getElementById('webcamPlaceholder');
+    
+    // Show webcam, hide placeholder
+    webcamElement.style.display = 'block';
+    webcamPlaceholder.style.display = 'none';
+    
+    // Access webcam
+    navigator.mediaDevices.getUserMedia({ video: true })
+        .then(stream => {
+            webcamStream = stream;
+            webcamElement.srcObject = stream;
+            
+            // Update UI
+            document.getElementById('captureFaceBtn').disabled = false;
+            updateStepStatus('cameraStep', 'complete');
+            
+            // Update setup status
+            updateSetupStatus('cameraReady');
+        })
+        .catch(error => {
+            console.error('Error accessing webcam:', error);
+            showAlert('Unable to access webcam. Please check permissions.', 'danger');
+            webcamElement.style.display = 'none';
+            webcamPlaceholder.style.display = 'block';
+            updateStepStatus('cameraStep', 'failed');
+        });
+}
+
+function captureFace() {
+    const webcamElement = document.getElementById('webcam');
+    const canvas = document.getElementById('faceCanvas');
+    const canvasContext = canvas.getContext('2d');
+    
+    // Set canvas dimensions to match webcam
+    canvas.width = webcamElement.videoWidth;
+    canvas.height = webcamElement.videoHeight;
+    
+    // Draw webcam frame to canvas
+    canvasContext.drawImage(webcamElement, 0, 0, canvas.width, canvas.height);
+    
+    // Hide webcam, show canvas
+    webcamElement.style.display = 'none';
+    canvas.style.display = 'block';
+    
+    // Get base64 data of the canvas
+    capturedFaceData = canvas.toDataURL('image/jpeg');
+    
+    // Update UI
+    document.getElementById('captureFaceBtn').disabled = true;
+    document.getElementById('retakeBtn').disabled = false;
+    document.getElementById('saveFaceDataBtn').disabled = false;
+    
+    // Update status
+    updateStepStatus('captureStep', 'complete');
+    updateSetupStatus('faceReady');
+}
+
+function retakePhoto() {
+    const webcamElement = document.getElementById('webcam');
+    const canvas = document.getElementById('faceCanvas');
+    
+    // Show webcam, hide canvas
+    webcamElement.style.display = 'block';
+    canvas.style.display = 'none';
+    
+    // Reset captured data
+    capturedFaceData = null;
+    
+    // Update UI
+    document.getElementById('captureFaceBtn').disabled = false;
+    document.getElementById('retakeBtn').disabled = true;
+    document.getElementById('saveFaceDataBtn').disabled = true;
+    
+    // Update status
+    updateStepStatus('captureStep', 'pending');
+    updateSetupStatus('cameraReady');
+}
+
+async function saveFaceData() {
+    if (!capturedFaceData) {
+        showAlert('No face data to save. Please capture your face first.', 'warning');
+        return;
+    }
+    
+    try {
+        // Show loading state
+        document.getElementById('saveFaceDataBtn').disabled = true;
+        document.getElementById('saveFaceDataBtn').innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i> Saving...';
+        updateStepStatus('saveStep', 'inProgress');
+        
+        // Prepare form data
+        const formData = new FormData();
+        formData.append('face_encoding', capturedFaceData);
+        
+        // Send request to server
+        const response = await fetch('/api/setup-face', {
+            method: 'POST',
+            body: formData
+        });
+        
+        const result = await response.json();
+        
+        if (response.ok) {
+            // Success
+            showAlert('Face data saved successfully!', 'success');
+            updateStepStatus('saveStep', 'complete');
+            updateSetupStatus('complete');
+            
+            // Disable buttons
+            document.getElementById('startCameraBtn').disabled = true;
+            document.getElementById('captureFaceBtn').disabled = true;
+            document.getElementById('retakeBtn').disabled = true;
+            document.getElementById('saveFaceDataBtn').disabled = true;
+            
+            // Stop webcam
+            if (webcamStream) {
+                webcamStream.getTracks().forEach(track => track.stop());
+            }
+            
+            // Redirect to dashboard after a delay
+            setTimeout(() => {
+                window.location.href = '/dashboard';
+            }, 3000);
+        } else {
+            // Error
+            showAlert('Error saving face data: ' + result.error, 'danger');
+            updateStepStatus('saveStep', 'failed');
+            document.getElementById('saveFaceDataBtn').disabled = false;
+            document.getElementById('saveFaceDataBtn').innerHTML = '<i class="fas fa-save me-2"></i> Save Face Data';
+        }
+    } catch (error) {
+        console.error('Error saving face data:', error);
+        showAlert('An error occurred while saving face data', 'danger');
+        updateStepStatus('saveStep', 'failed');
+        document.getElementById('saveFaceDataBtn').disabled = false;
+        document.getElementById('saveFaceDataBtn').innerHTML = '<i class="fas fa-save me-2"></i> Save Face Data';
+    }
+}
+
+function updateStepStatus(stepId, status) {
+    const step = document.getElementById(stepId);
+    const statusBadge = document.getElementById(stepId + 'Status');
+    const icon = step.querySelector('i');
+    
+    switch (status) {
+        case 'pending':
+            step.classList.remove('list-group-item-success', 'list-group-item-danger', 'list-group-item-warning');
+            statusBadge.className = 'badge bg-secondary rounded-pill';
+            statusBadge.textContent = 'Pending';
+            icon.className = 'fas fa-circle me-2 text-secondary';
+            break;
+        case 'inProgress':
+            step.classList.add('list-group-item-warning');
+            step.classList.remove('list-group-item-success', 'list-group-item-danger');
+            statusBadge.className = 'badge bg-warning rounded-pill';
+            statusBadge.textContent = 'In Progress';
+            icon.className = 'fas fa-spinner fa-pulse me-2 text-warning';
+            break;
+        case 'complete':
+            step.classList.add('list-group-item-success');
+            step.classList.remove('list-group-item-warning', 'list-group-item-danger');
+            statusBadge.className = 'badge bg-success rounded-pill';
+            statusBadge.textContent = 'Complete';
+            icon.className = 'fas fa-check-circle me-2 text-success';
+            break;
+        case 'failed':
+            step.classList.add('list-group-item-danger');
+            step.classList.remove('list-group-item-success', 'list-group-item-warning');
+            statusBadge.className = 'badge bg-danger rounded-pill';
+            statusBadge.textContent = 'Failed';
+            icon.className = 'fas fa-times-circle me-2 text-danger';
+            break;
+    }
+}
+
+function updateSetupStatus(status) {
+    const statusContainer = document.getElementById('faceSetupStatus');
+    
+    switch (status) {
+        case 'notConfigured':
+            statusContainer.innerHTML = `
+                <div class="alert alert-warning">
+                    <i class="fas fa-exclamation-triangle me-2"></i>
+                    Your face data has not been set up yet. Please complete the face recognition setup.
+                </div>
+            `;
+            break;
+        case 'cameraReady':
+            statusContainer.innerHTML = `
+                <div class="alert alert-info">
+                    <i class="fas fa-camera me-2"></i>
+                    Camera is ready. Please position your face and click "Capture Face".
+                </div>
+            `;
+            break;
+        case 'faceReady':
+            statusContainer.innerHTML = `
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Face captured successfully. Please click "Save Face Data" to complete the setup.
+                </div>
+            `;
+            break;
+        case 'complete':
+            statusContainer.innerHTML = `
+                <div class="alert alert-success">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Face recognition setup completed successfully! You will be redirected to the dashboard.
+                </div>
+            `;
+            break;
+    }
+}
+
+function showAlert(message, type) {
+    const alertContainer = document.getElementById('alertContainer');
+    const alertDiv = document.createElement('div');
+    alertDiv.className = `alert alert-${type} alert-dismissible fade show`;
+    alertDiv.innerHTML = `
+        ${message}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    `;
+    alertContainer.appendChild(alertDiv);
+    
+    // Auto-remove after 5 seconds
+    setTimeout(() => {
+        alertDiv.remove();
+    }, 5000);
+}
+</script>
+{% endblock %}

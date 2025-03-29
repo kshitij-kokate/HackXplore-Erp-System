@@ -1,0 +1,127 @@
+/* 
+ * Bootstrap Light Theme Fixes 
+ * This CSS file contains general fixes for using light theme with dark-themed elements
+ */
+
+/* Card background and border fixes */
+.card.bg-dark {
+    background-color: #fff !important;
+    border: 1px solid rgba(0, 0, 0, 0.125) !important;
+}
+
+.card-header.bg-dark {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125) !important;
+}
+
+/* Text color fixes */
+.text-light {
+    color: #212529 !important;
+}
+
+/* Form control fixes */
+.form-control.bg-dark, 
+.form-select.bg-dark,
+textarea.bg-dark,
+input.bg-dark {
+    background-color: #fff !important;
+    color: #212529 !important;
+    border-color: #ced4da !important;
+}
+
+/* Button fixes */
+.btn-outline-light {
+    color: #212529;
+    border-color: #ced4da;
+}
+
+.btn-outline-light:hover {
+    color: #212529;
+    background-color: #f8f9fa;
+    border-color: #ced4da;
+}
+
+/* Alert fixes */
+.alert-secondary {
+    background-color: #e9ecef !important;
+    color: #212529 !important;
+    border-color: #dee2e6 !important;
+}
+
+/* Dropdown fixes */
+.dropdown-menu.bg-dark {
+    background-color: #fff !important;
+    color: #212529 !important;
+    border-color: rgba(0, 0, 0, 0.15) !important;
+}
+
+.dropdown-item.text-light:hover {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
+}
+
+/* Modal fixes */
+.modal-content.bg-dark {
+    background-color: #fff !important;
+    color: #212529 !important;
+}
+
+.modal-header.bg-dark {
+    background-color: #f8f9fa !important;
+    border-bottom: 1px solid #dee2e6 !important;
+}
+
+.modal-footer.bg-dark {
+    background-color: #f8f9fa !important;
+    border-top: 1px solid #dee2e6 !important;
+}
+
+.btn-close-white {
+    filter: none !important;
+}
+
+/* Table fixes */
+.table.table-dark {
+    color: #212529 !important;
+    border-color: #dee2e6 !important;
+}
+
+.table.table-dark th,
+.table.table-dark td {
+    background-color: #fff !important;
+    border-color: #dee2e6 !important;
+}
+
+.table.table-dark thead th {
+    background-color: #f8f9fa !important;
+}
+
+/* Pre and code blocks */
+pre.bg-dark, 
+code.bg-dark {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
+    border-color: #dee2e6 !important;
+}
+
+/* Progress bar backgrounds */
+.progress {
+    background-color: #e9ecef !important;
+}
+
+/* List group fixes */
+.list-group-item.bg-dark {
+    background-color: #fff !important;
+    color: #212529 !important;
+    border-color: rgba(0, 0, 0, 0.125) !important;
+}
+
+.list-group-flush.bg-dark {
+    background-color: #fff !important;
+}
+
+/* Border fixes */
+.border-secondary {
+    border-color: #dee2e6 !important;
+}

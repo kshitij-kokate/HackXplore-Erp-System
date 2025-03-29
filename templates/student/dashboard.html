@@ -1,0 +1,541 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}Student Dashboard - CampusIQ{% endblock %}
+
+{% block content %}
+<!-- Welcome Banner -->
+<div class="welcome-banner">
+    <h1>Welcome to CampusIQ</h1>
+    <p>Your AI-driven academic companion designed to enhance your educational experience.</p>
+    <p>Our platform offers personalized learning paths, research discovery tools, and intelligent scheduling to help you succeed in your academic journey.</p>
+    
+    <div class="action-buttons">
+        <a href="http://localhost:8000/" class="action-button" id="">
+            <i class="fas fa-rocket"></i> Start Learning Paths
+        </a>
+        <a href="http://localhost:8000/" class="action-button secondary" id="exploreResearchBtn">
+            <i class="fas fa-search"></i> Explore Research
+        </a>
+    </div>
+</div>
+
+<!-- AI Assistant -->
+<div class="ai-assistant-card">
+    <div class="assistant-header">
+        <div class="assistant-icon">
+            <i class="fas fa-robot"></i>
+        </div>
+        <div class="assistant-title">AI Academic Assistant</div>
+    </div>
+    <div class="assistant-buttons">
+        <a href="#" class="assistant-btn" id="openChatBot">
+            <i class="fas fa-comments"></i>
+            <span>Ask Questions</span>
+        </a>
+        <a href="#" class="assistant-btn" id="generateQuiz">
+            <i class="fas fa-question-circle"></i>
+            <span>Generate Quiz</span>
+        </a>
+    </div>
+</div>
+
+<!-- Courses -->
+<div class="course-section">
+    <h2 class="section-title">My Courses</h2>
+    <div class="courses-grid">
+        {% for course in courses %}
+        <div class="course-card">
+            <div class="course-icon">
+                <i class="fas fa-book"></i>
+            </div>
+            <h3 class="course-title">{{ course.title }}</h3>
+            <div class="course-code">{{ course.course_id }}</div>
+            <p class="course-description">
+                {% if course.course_id == 'CS101' %}
+                Basic programming concepts using Python
+                {% elif course.course_id == 'CS102' %}
+                Advanced data structures and algorithms
+                {% else %}
+                {{ course.description }}
+                {% endif %}
+            </p>
+            <a href="#" class="course-action">View Assignment</a>
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Assignments and Submissions -->
+<div class="assignments-section">
+    <div class="assignments-card">
+        <h2 class="section-title">Pending Assignments</h2>
+        <div class="no-assignments">
+            <p>No pending assignments. You're all caught up!</p>
+        </div>
+    </div>
+    
+    <div class="assignments-card">
+        <h2 class="section-title">Recent Submissions</h2>
+        <div class="assignment-item">
+            <h3 class="assignment-title">Python Basics</h3>
+            <div class="assignment-date">Submitted: 2025-03-26</div>
+            <span class="grade-badge good">90/100</span>
+        </div>
+        <div class="assignment-item">
+            <h3 class="assignment-title">Implement Stack</h3>
+            <div class="assignment-date">Submitted: 2025-03-21</div>
+            <span class="grade-badge good">92/100</span>
+        </div>
+    </div>
+</div>
+
+<!-- Progress Section -->
+<div class="progress-section">
+    <h2 class="section-title">Academic Progress</h2>
+    <div class="chart-container">
+        <div class="row">
+            <div class="col-md-6">
+                <h3 class="chart-title">Current Grades by Course</h3>
+                <canvas id="gradesChart" height="200"></canvas>
+            </div>
+            <div class="col-md-6">
+                <h3 class="chart-title">Course Completion</h3>
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <div class="progress-title">Introduction to Programming</div>
+                        <div class="progress-percentage">85%</div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 85%"></div>
+                    </div>
+                </div>
+                <div class="progress-item">
+                    <div class="progress-header">
+                        <div class="progress-title">Data Structures</div>
+                        <div class="progress-percentage">65%</div>
+                    </div>
+                    <div class="progress-bar-container">
+                        <div class="progress-bar-fill" style="width: 65%"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Chat Bot Interface -->
+<div class="chat-container" id="chatContainer">
+    <div class="chat-header">
+        <div class="chat-title">
+            <i class="fas fa-robot"></i> AI Academic Assistant
+        </div>
+        <button class="close-chat" id="closeChat">
+            <i class="fas fa-times"></i>
+        </button>
+    </div>
+    <div class="chat-messages" id="chatMessages">
+        <div class="message bot">
+            <div class="message-content">Hello! I'm your AI academic assistant. How can I help you today?</div>
+            <div class="message-time">Now</div>
+        </div>
+    </div>
+    <div class="chat-input">
+        <input type="text" id="messageInput" placeholder="Type your message...">
+        <button id="sendMessage">
+            <i class="fas fa-paper-plane"></i>
+        </button>
+    </div>
+</div>
+
+<!-- Quiz Modal -->
+<div class="modal fade" id="quizModal" tabindex="-1" aria-labelledby="quizModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="quizModalLabel">Generate a Practice Quiz</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="quizGeneratorForm">
+                    <div class="mb-3">
+                        <label for="quizSubject" class="form-label">Subject</label>
+                        <select class="form-select" id="quizSubject" required>
+                            <option value="">Select a subject</option>
+                            <option value="python">Python Programming</option>
+                            <option value="data_structures">Data Structures</option>
+                            <option value="algorithms">Algorithms</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quizDifficulty" class="form-label">Difficulty</label>
+                        <select class="form-select" id="quizDifficulty" required>
+                            <option value="easy">Easy</option>
+                            <option value="medium">Medium</option>
+                            <option value="hard">Hard</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="quizQuestions" class="form-label">Number of Questions</label>
+                        <input type="number" class="form-control" id="quizQuestions" min="1" max="10" value="5" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Generate Quiz</button>
+                </form>
+                
+                <div id="quizContent" class="mt-4" style="display: none;">
+                    <h3 id="quizTitle" class="mb-3"></h3>
+                    <div id="quizQuestions"></div>
+                    <button id="submitQuiz" class="btn btn-success mt-3">Submit Answers</button>
+                </div>
+                
+                <div id="quizResults" class="mt-4" style="display: none;">
+                    <h3>Quiz Results</h3>
+                    <div class="alert alert-info">
+                        <p id="quizScore"></p>
+                    </div>
+                    <div id="quizFeedback"></div>
+                    <button id="newQuiz" class="btn btn-primary mt-3">Create New Quiz</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Initialize charts
+        const gradesCtx = document.getElementById('gradesChart').getContext('2d');
+        const gradesChart = new Chart(gradesCtx, {
+            type: 'bar',
+            data: {
+                labels: ['Introduction to Programming', 'Data Structures'],
+                datasets: [{
+                    label: 'Current Grade',
+                    data: [85, 65],
+                    backgroundColor: [
+                        'rgba(116, 203, 210, 0.7)',
+                        'rgba(100, 181, 246, 0.7)'
+                    ],
+                    borderColor: [
+                        'rgba(116, 203, 210, 1)',
+                        'rgba(100, 181, 246, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+        
+        // Chat bot functionality
+        const openChatBtn = document.getElementById('openChatBot');
+        const chatContainer = document.getElementById('chatContainer');
+        const closeChat = document.getElementById('closeChat');
+        const messageInput = document.getElementById('messageInput');
+        const sendMessage = document.getElementById('sendMessage');
+        const chatMessages = document.getElementById('chatMessages');
+        
+        openChatBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            chatContainer.style.display = 'flex';
+        });
+        
+        closeChat.addEventListener('click', function() {
+            chatContainer.style.display = 'none';
+        });
+        
+        function sendChatMessage() {
+            const message = messageInput.value.trim();
+            if (message) {
+                // Add user message
+                addMessage(message, 'user');
+                messageInput.value = '';
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    let response;
+                    if (message.toLowerCase().includes('assignment') || message.toLowerCase().includes('homework')) {
+                        response = "I can help you with your assignments! What specific topic are you working on?";
+                    } else if (message.toLowerCase().includes('quiz') || message.toLowerCase().includes('test')) {
+                        response = "Need help preparing for a quiz? You can use our quiz generator to practice!";
+                    } else if (message.toLowerCase().includes('python')) {
+                        response = "Python is a great language for beginners. Are you working on a specific Python concept?";
+                    } else {
+                        response = "I'm here to help with your academic questions. Could you provide more details about what you need?";
+                    }
+                    addMessage(response, 'bot');
+                }, 1000);
+            }
+        }
+        
+        function addMessage(content, sender) {
+            const messageDiv = document.createElement('div');
+            messageDiv.classList.add('message', sender);
+            
+            const messageContent = document.createElement('div');
+            messageContent.classList.add('message-content');
+            messageContent.textContent = content;
+            
+            const messageTime = document.createElement('div');
+            messageTime.classList.add('message-time');
+            messageTime.textContent = 'Now';
+            
+            messageDiv.appendChild(messageContent);
+            messageDiv.appendChild(messageTime);
+            
+            chatMessages.appendChild(messageDiv);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        }
+        
+        sendMessage.addEventListener('click', sendChatMessage);
+        
+        messageInput.addEventListener('keypress', function(e) {
+            if (e.key === 'Enter') {
+                sendChatMessage();
+            }
+        });
+        
+        // Quiz Generator functionality
+        const generateQuizBtn = document.getElementById('generateQuiz');
+        const quizModal = new bootstrap.Modal(document.getElementById('quizModal'));
+        const quizForm = document.getElementById('quizGeneratorForm');
+        const quizContent = document.getElementById('quizContent');
+        const quizResults = document.getElementById('quizResults');
+        const quizTitle = document.getElementById('quizTitle');
+        const quizQuestions = document.getElementById('quizQuestions');
+        const submitQuizBtn = document.getElementById('submitQuiz');
+        const newQuizBtn = document.getElementById('newQuiz');
+        
+        generateQuizBtn.addEventListener('click', function(e) {
+            e.preventDefault();
+            quizModal.show();
+        });
+        
+        quizForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
+            const subject = document.getElementById('quizSubject').value;
+            const difficulty = document.getElementById('quizDifficulty').value;
+            const numQuestions = document.getElementById('quizQuestions').value;
+            
+            quizForm.style.display = 'none';
+            quizContent.style.display = 'block';
+            quizResults.style.display = 'none';
+            
+            // Generate quiz based on selected options
+            generateQuizQuestions(subject, difficulty, numQuestions);
+        });
+        
+        function generateQuizQuestions(subject, difficulty, numQuestions) {
+            let questions = [];
+            
+            if (subject === 'python') {
+                questions = [
+                    {
+                        question: "What is the output of: print(3 * 'abc')?",
+                        options: ["3abc", "abcabcabc", "abc3", "Error"],
+                        answer: 1
+                    },
+                    {
+                        question: "Which of the following is a mutable data type in Python?",
+                        options: ["string", "tuple", "list", "int"],
+                        answer: 2
+                    },
+                    {
+                        question: "What does the 'append()' method do for Python lists?",
+                        options: ["Adds an element at a specified position", "Adds an element at the beginning", "Adds an element at the end", "Removes an element"],
+                        answer: 2
+                    },
+                    {
+                        question: "How do you create a function in Python?",
+                        options: ["function myFunc():", "def myFunc():", "create myFunc():", "new function myFunc():"],
+                        answer: 1
+                    },
+                    {
+                        question: "Which operator is used for exponentiation in Python?",
+                        options: ["^", "**", "^^", "//"],
+                        answer: 1
+                    }
+                ];
+            } else if (subject === 'data_structures') {
+                questions = [
+                    {
+                        question: "Which data structure follows the LIFO principle?",
+                        options: ["Queue", "Stack", "Linked List", "Array"],
+                        answer: 1
+                    },
+                    {
+                        question: "What is the time complexity of searching an element in a balanced binary search tree?",
+                        options: ["O(1)", "O(n)", "O(log n)", "O(n log n)"],
+                        answer: 2
+                    },
+                    {
+                        question: "Which of the following is not a linear data structure?",
+                        options: ["Array", "Linked List", "Queue", "Tree"],
+                        answer: 3
+                    },
+                    {
+                        question: "In a hash table, what happens when a collision occurs?",
+                        options: ["The element is discarded", "The element replaces the existing one", "The element is stored in an alternative location", "The program crashes"],
+                        answer: 2
+                    },
+                    {
+                        question: "What is the worst-case time complexity of bubble sort?",
+                        options: ["O(n)", "O(n log n)", "O(n²)", "O(2ⁿ)"],
+                        answer: 2
+                    }
+                ];
+            } else if (subject === 'algorithms') {
+                questions = [
+                    {
+                        question: "Which sorting algorithm has the best average-case time complexity?",
+                        options: ["Bubble Sort", "Selection Sort", "Insertion Sort", "Merge Sort"],
+                        answer: 3
+                    },
+                    {
+                        question: "What algorithm is typically used to find the shortest path in a weighted graph?",
+                        options: ["Breadth-First Search", "Depth-First Search", "Dijkstra's Algorithm", "Binary Search"],
+                        answer: 2
+                    },
+                    {
+                        question: "What is the time complexity of binary search?",
+                        options: ["O(1)", "O(n)", "O(log n)", "O(n log n)"],
+                        answer: 2
+                    },
+                    {
+                        question: "Which algorithm design technique is used in dynamic programming?",
+                        options: ["Divide and Conquer", "Greedy Approach", "Optimal Substructure", "Randomized Algorithm"],
+                        answer: 2
+                    },
+                    {
+                        question: "What is the space complexity of recursive algorithms in general?",
+                        options: ["O(1)", "O(n)", "O(log n)", "Depends on the depth of recursion"],
+                        answer: 3
+                    }
+                ];
+            }
+            
+            // Shuffle and limit to desired number
+            questions = questions.sort(() => Math.random() - 0.5).slice(0, numQuestions);
+            
+            // Display the quiz
+            const subjectName = {
+                'python': 'Python Programming',
+                'data_structures': 'Data Structures',
+                'algorithms': 'Algorithms'
+            }[subject];
+            
+            quizTitle.textContent = `${subjectName} Quiz (${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)})`;
+            
+            quizQuestions.innerHTML = '';
+            
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.classList.add('quiz-question', 'mb-4');
+                
+                const questionTitle = document.createElement('h5');
+                questionTitle.classList.add('mb-3');
+                questionTitle.textContent = `Question ${index + 1}: ${q.question}`;
+                
+                questionDiv.appendChild(questionTitle);
+                
+                q.options.forEach((option, optIndex) => {
+                    const optionDiv = document.createElement('div');
+                    optionDiv.classList.add('form-check', 'mb-2');
+                    
+                    const input = document.createElement('input');
+                    input.classList.add('form-check-input');
+                    input.type = 'radio';
+                    input.name = `question-${index}`;
+                    input.id = `q${index}-option${optIndex}`;
+                    input.value = optIndex;
+                    input.dataset.correctAnswer = q.answer;
+                    
+                    const label = document.createElement('label');
+                    label.classList.add('form-check-label');
+                    label.htmlFor = `q${index}-option${optIndex}`;
+                    label.textContent = option;
+                    
+                    optionDiv.appendChild(input);
+                    optionDiv.appendChild(label);
+                    questionDiv.appendChild(optionDiv);
+                });
+                
+                quizQuestions.appendChild(questionDiv);
+            });
+        }
+        
+        submitQuizBtn.addEventListener('click', function() {
+            const allQuestions = quizQuestions.querySelectorAll('.quiz-question');
+            let score = 0;
+            let totalQuestions = allQuestions.length;
+            let answeredQuestions = 0;
+            
+            allQuestions.forEach((question, index) => {
+                const selectedOption = question.querySelector('input[type="radio"]:checked');
+                const correctAnswer = parseInt(question.querySelector('input[type="radio"]').dataset.correctAnswer);
+                const questionTitle = question.querySelector('h5');
+                
+                if (selectedOption) {
+                    answeredQuestions++;
+                    if (parseInt(selectedOption.value) === correctAnswer) {
+                        score++;
+                        questionTitle.innerHTML = `Question ${index + 1}: ${questionTitle.textContent.substring(questionTitle.textContent.indexOf(':') + 1)} <span class="text-success"><i class="fas fa-check-circle"></i> Correct</span>`;
+                    } else {
+                        questionTitle.innerHTML = `Question ${index + 1}: ${questionTitle.textContent.substring(questionTitle.textContent.indexOf(':') + 1)} <span class="text-danger"><i class="fas fa-times-circle"></i> Incorrect</span>`;
+                    }
+                }
+            });
+            
+            if (answeredQuestions < totalQuestions) {
+                alert(`Please answer all questions. You've answered ${answeredQuestions} out of ${totalQuestions}.`);
+                return;
+            }
+            
+            // Display results
+            quizContent.style.display = 'none';
+            quizResults.style.display = 'block';
+            
+            const scorePercentage = (score / totalQuestions) * 100;
+            document.getElementById('quizScore').textContent = `You scored ${score} out of ${totalQuestions} (${scorePercentage.toFixed(1)}%)`;
+            
+            let feedback = '';
+            if (scorePercentage >= 80) {
+                feedback = "Excellent work! You have a strong understanding of this topic.";
+            } else if (scorePercentage >= 60) {
+                feedback = "Good job! You have a decent grasp of the material, but there's still room for improvement.";
+            } else {
+                feedback = "You might need to review this topic more carefully. Keep practicing!";
+            }
+            
+            document.getElementById('quizFeedback').textContent = feedback;
+        });
+        
+        newQuizBtn.addEventListener('click', function() {
+            quizResults.style.display = 'none';
+            quizForm.style.display = 'block';
+            document.getElementById('quizSubject').value = '';
+            document.getElementById('quizDifficulty').value = 'easy';
+            document.getElementById('quizQuestions').value = '5';
+        });
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,800 @@
+{% extends 'dashboard_layout.html' %}
+
+{% block title %}Student Management{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Student Management</h2>
+        <div>
+            <button class="btn btn-outline-light me-2"><i class="bi bi-filter"></i> Filter</button>
+            <button class="btn btn-primary"><i class="bi bi-plus-lg"></i> Add Student</button>
+        </div>
+    </div>
+
+    <!-- Statistics Cards -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-dark border-0 mb-3">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 me-3">
+                        <i class="bi bi-people text-primary fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Total Students</h6>
+                        <h4 class="mb-0">{{ total_students|default(24) }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark border-0 mb-3">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3 me-3">
+                        <i class="bi bi-book text-success fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Total Courses</h6>
+                        <h4 class="mb-0">{{ total_courses|default(5) }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark border-0 mb-3">
+                <div class="card-body d-flex align-items-center">
+                    <div class="rounded-circle bg-info bg-opacity-10 p-3 me-3">
+                        <i class="bi bi-calendar2-check text-info fs-4"></i>
+                    </div>
+                    <div>
+                        <h6 class="text-muted mb-1">Total Enrollments</h6>
+                        <h4 class="mb-0">{{ total_enrollments|default(36) }}</h4>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Table -->
+    <div class="card bg-dark border-0">
+        <div class="card-header bg-dark border-bottom border-secondary py-3">
+            <div class="d-flex">
+                <div class="d-flex align-items-center">
+                    <button class="btn btn-sm btn-outline-secondary me-2">Today</button>
+                    <button class="btn btn-sm btn-outline-secondary me-2">Week</button>
+                    <button class="btn btn-sm btn-outline-secondary">Month</button>
+                </div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Email</th>
+                            <th>Program</th>
+                            <th>Year</th>
+                            <th>Average Grade</th>
+                            <th>Status</th>
+                            <th>Last Login</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for student in students %}
+                        <tr>
+                            <td>{{ student.username }}</td>
+                            <td>{{ student.email }}</td>
+                            <td>{{ student.department|default('Computer Science') }}</td>
+                            <td>{{ student.year_of_study|default(2) }}</td>
+                            <td>
+                                <div class="progress bg-dark">
+                                    <div class="progress-bar bg-success" style="width: 85%"></div>
+                                </div>
+                            </td>
+                            <td><span class="badge bg-success">Active</span></td>
+                            <td>{{ student.created_at|default('2 hours ago') }}</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary me-1" onclick="showStudentDetails('{{ student.id }}')"><i class="bi bi-eye"></i></button>
+                                <button class="btn btn-sm btn-warning me-1" onclick="showMessageModal('{{ student.id }}')"><i class="bi bi-chat"></i></button>
+                                <button class="btn btn-sm btn-info" onclick="showStudentAnalytics('{{ student.id }}')"><i class="bi bi-graph-up"></i></button>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td>John Smith</td>
+                            <td>john.smith@example.com</td>
+                            <td>Computer Science</td>
+                            <td>2</td>
+                            <td>
+                                <div class="progress bg-dark">
+                                    <div class="progress-bar bg-success" style="width: 85%"></div>
+                                </div>
+                            </td>
+                            <td><span class="badge bg-success">Active</span></td>
+                            <td>2 hours ago</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary me-1" onclick="showStudentDetails(1)"><i class="bi bi-eye"></i></button>
+                                <button class="btn btn-sm btn-warning me-1" onclick="showMessageModal(1)"><i class="bi bi-chat"></i></button>
+                                <button class="btn btn-sm btn-info" onclick="showStudentAnalytics(1)"><i class="bi bi-graph-up"></i></button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Emma Johnson</td>
+                            <td>emma.j@example.com</td>
+                            <td>Data Science</td>
+                            <td>3</td>
+                            <td>
+                                <div class="progress bg-dark">
+                                    <div class="progress-bar bg-warning" style="width: 75%"></div>
+                                </div>
+                            </td>
+                            <td><span class="badge bg-warning">At Risk</span></td>
+                            <td>1 day ago</td>
+                            <td>
+                                <button class="btn btn-sm btn-primary me-1" onclick="showStudentDetails(2)"><i class="bi bi-eye"></i></button>
+                                <button class="btn btn-sm btn-warning me-1" onclick="showMessageModal(2)"><i class="bi bi-chat"></i></button>
+                                <button class="btn btn-sm btn-info" onclick="showStudentAnalytics(2)"><i class="bi bi-graph-up"></i></button>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <div class="card-footer bg-dark border-top border-secondary">
+            <nav aria-label="Student pagination">
+                <ul class="pagination justify-content-center mb-0">
+                    <li class="page-item disabled"><a class="page-link" href="#">Previous</a></li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item"><a class="page-link" href="#">Next</a></li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+
+<!-- Student Details Modal -->
+<div class="modal fade" id="studentDetailsModal" tabindex="-1" aria-labelledby="studentDetailsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="studentDetailsModalLabel">Student Details</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="row">
+                    <div class="col-md-4 mb-3">
+                        <div class="text-center">
+                            <img src="https://via.placeholder.com/150" class="rounded-circle mb-3" alt="Student Profile">
+                            <h5 id="studentName">John Smith</h5>
+                            <p class="text-muted" id="studentProgram">Computer Science - Year 2</p>
+                        </div>
+                    </div>
+                    <div class="col-md-8">
+                        <div class="mb-3">
+                            <h6>Contact Information</h6>
+                            <div class="table-responsive">
+                                <table class="table table-dark table-bordered">
+                                    <tr>
+                                        <th>Email</th>
+                                        <td id="studentEmail">john.smith@example.com</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Student ID</th>
+                                        <td id="studentId">CS20210001</td>
+                                    </tr>
+                                    <tr>
+                                        <th>Department</th>
+                                        <td id="studentDepartment">Computer Science</td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        
+                        <div>
+                            <h6>Enrolled Courses</h6>
+                            <div class="table-responsive">
+                                <table class="table table-dark table-bordered">
+                                    <thead>
+                                        <tr>
+                                            <th>Course Code</th>
+                                            <th>Course Name</th>
+                                            <th>Status</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="studentCourses">
+                                        <tr>
+                                            <td>CS101</td>
+                                            <td>Introduction to Programming</td>
+                                            <td><span class="badge bg-success">Enrolled</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>CS201</td>
+                                            <td>Data Structures</td>
+                                            <td><span class="badge bg-success">Enrolled</span></td>
+                                        </tr>
+                                        <tr>
+                                            <td>MATH101</td>
+                                            <td>Calculus I</td>
+                                            <td><span class="badge bg-success">Enrolled</span></td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Edit Details</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Message Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="messageModalLabel">Send Message</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form>
+                    <div class="mb-3">
+                        <label for="messageRecipient" class="form-label">To:</label>
+                        <input type="text" class="form-control bg-dark text-light border-secondary" id="messageRecipient" readonly>
+                    </div>
+                    <div class="mb-3">
+                        <label for="messageSubject" class="form-label">Subject:</label>
+                        <input type="text" class="form-control bg-dark text-light border-secondary" id="messageSubject" placeholder="Enter subject">
+                    </div>
+                    <div class="mb-3">
+                        <label for="messageContent" class="form-label">Message:</label>
+                        <textarea class="form-control bg-dark text-light border-secondary" id="messageContent" rows="5" placeholder="Type your message here..."></textarea>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary">Send Message</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Analytics Modal -->
+<div class="modal fade" id="analyticsModal" tabindex="-1" aria-labelledby="analyticsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="analyticsModalLabel">Student Analytics</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <ul class="nav nav-tabs mb-4" id="analyticsTab" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="overview-tab" data-bs-toggle="tab" data-bs-target="#overview" type="button" role="tab" aria-controls="overview" aria-selected="true">Overview</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="grades-tab" data-bs-toggle="tab" data-bs-target="#grades" type="button" role="tab" aria-controls="grades" aria-selected="false">Grades</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="attendance-tab" data-bs-toggle="tab" data-bs-target="#attendance" type="button" role="tab" aria-controls="attendance" aria-selected="false">Attendance</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="engagement-tab" data-bs-toggle="tab" data-bs-target="#engagement" type="button" role="tab" aria-controls="engagement" aria-selected="false">Engagement</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="ai-recommendations-tab" data-bs-toggle="tab" data-bs-target="#ai-recommendations" type="button" role="tab" aria-controls="ai-recommendations" aria-selected="false">AI Recommendations</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="analyticsTabContent">
+                    <!-- Overview Tab -->
+                    <div class="tab-pane fade show active" id="overview" role="tabpanel" aria-labelledby="overview-tab">
+                        <div class="row">
+                            <div class="col-md-3 mb-4">
+                                <div class="card bg-dark border-1 border-primary h-100">
+                                    <div class="card-body text-center">
+                                        <h1 class="display-4 text-primary">85%</h1>
+                                        <p class="text-muted">Overall Grade Average</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4">
+                                <div class="card bg-dark border-1 border-success h-100">
+                                    <div class="card-body text-center">
+                                        <h1 class="display-4 text-success">92%</h1>
+                                        <p class="text-muted">Attendance Rate</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4">
+                                <div class="card bg-dark border-1 border-info h-100">
+                                    <div class="card-body text-center">
+                                        <h1 class="display-4 text-info">78%</h1>
+                                        <p class="text-muted">Assignment Completion</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3 mb-4">
+                                <div class="card bg-dark border-1 border-warning h-100">
+                                    <div class="card-body text-center">
+                                        <h1 class="display-4 text-warning">65%</h1>
+                                        <p class="text-muted">Engagement Score</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="row">
+                            <div class="col-md-8 mb-4">
+                                <div class="card bg-dark border-0 h-100">
+                                    <div class="card-header bg-dark border-secondary">
+                                        <h5 class="mb-0">Performance Timeline</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="timelineChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mb-4">
+                                <div class="card bg-dark border-0 h-100">
+                                    <div class="card-header bg-dark border-secondary">
+                                        <h5 class="mb-0">Course Performance</h5>
+                                    </div>
+                                    <div class="card-body">
+                                        <canvas id="coursePerformanceChart" height="250"></canvas>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Grades Tab -->
+                    <div class="tab-pane fade" id="grades" role="tabpanel" aria-labelledby="grades-tab">
+                        <div class="card bg-dark border-0">
+                            <div class="card-header bg-dark border-secondary">
+                                <h5 class="mb-0">Grade Distribution</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="gradeChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Attendance Tab -->
+                    <div class="tab-pane fade" id="attendance" role="tabpanel" aria-labelledby="attendance-tab">
+                        <div class="card bg-dark border-0">
+                            <div class="card-header bg-dark border-secondary">
+                                <h5 class="mb-0">Attendance History</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="attendanceChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Engagement Tab -->
+                    <div class="tab-pane fade" id="engagement" role="tabpanel" aria-labelledby="engagement-tab">
+                        <div class="card bg-dark border-0">
+                            <div class="card-header bg-dark border-secondary">
+                                <h5 class="mb-0">Engagement Metrics</h5>
+                            </div>
+                            <div class="card-body">
+                                <canvas id="engagementChart" height="300"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- AI Recommendations Tab -->
+                    <div class="tab-pane fade" id="ai-recommendations" role="tabpanel" aria-labelledby="ai-recommendations-tab">
+                        <div class="card bg-dark border-0 mb-3">
+                            <div class="card-header bg-danger">
+                                <h5 class="mb-0">At-Risk Indicator</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>Student shows signs of declining performance levels over the last 3 weeks, with average scores dropping by more than 10%.</p>
+                                <p class="mb-0"><strong>Recommendation:</strong> Consider scheduling individual meetings with them to address challenges.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card bg-dark border-0 mb-3">
+                            <div class="card-header bg-warning text-dark">
+                                <h5 class="mb-0">Assignment Completion Pattern</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>Assignment #3 (Linear Regression) is significantly lower in score (60%) compared to other assignments (80%).</p>
+                                <p class="mb-0"><strong>Recommendation:</strong> Review concepts relating to predictive statistical exercises with this student.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card bg-dark border-0 mb-3">
+                            <div class="card-header bg-success">
+                                <h5 class="mb-0">Strength Areas</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>Student excels particularly in team discussions with higher participation vs. other classmates.</p>
+                                <p class="mb-0"><strong>Recommendation:</strong> Encourage more peer participation through group discussions.</p>
+                            </div>
+                        </div>
+                        
+                        <div class="card bg-dark border-0">
+                            <div class="card-header bg-info text-dark">
+                                <h5 class="mb-0">Learning Pattern Recommendation</h5>
+                            </div>
+                            <div class="card-body">
+                                <p>Data indicates this student has higher engagement (30% compared to their class average of 20%).</p>
+                                <p class="mb-0"><strong>Recommendation:</strong> Consider inviting them to join optional advanced topics.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Download Report</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Function to show student details
+        window.showStudentDetails = function(studentId) {
+            // In a real implementation, fetch student details from server
+            console.log('Showing details for student ID:', studentId);
+            
+            // For demo, we'll just fill in some static data
+            document.getElementById('studentName').textContent = 'John Smith';
+            document.getElementById('studentProgram').textContent = 'Computer Science - Year 2';
+            document.getElementById('studentEmail').textContent = 'john.smith@example.com';
+            document.getElementById('studentId').textContent = 'CS20210001';
+            document.getElementById('studentDepartment').textContent = 'Computer Science';
+            
+            // Show the modal
+            const modal = new bootstrap.Modal(document.getElementById('studentDetailsModal'));
+            modal.show();
+        };
+        
+        // Function to show message modal
+        window.showMessageModal = function(studentId) {
+            // In a real implementation, fetch student details from server
+            console.log('Showing message modal for student ID:', studentId);
+            
+            // Set recipient
+            document.getElementById('messageRecipient').value = 'John Smith <john.smith@example.com>';
+            
+            // Show the modal
+            const modal = new bootstrap.Modal(document.getElementById('messageModal'));
+            modal.show();
+        };
+        
+        // Function to show student analytics
+        window.showStudentAnalytics = function(studentId) {
+            // In a real implementation, fetch analytics data from server
+            console.log('Showing analytics for student ID:', studentId);
+            
+            // Initialize charts
+            initializeGradeChart();
+            initializeAttendanceChart();
+            initializeEngagementChart();
+            initializeTimelineChart();
+            initializeCoursePerformanceChart();
+            
+            // Show the modal
+            const modal = new bootstrap.Modal(document.getElementById('analyticsModal'));
+            modal.show();
+        };
+        
+        // Initialize Grade Chart
+        function initializeGradeChart() {
+            const ctx = document.getElementById('gradeChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: ['Data Structures', 'Algorithms', 'Database Management', 'Web Development', 'Machine Learning'],
+                    datasets: [{
+                        label: 'Grade (%)',
+                        data: [85, 78, 92, 65, 88],
+                        backgroundColor: [
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(54, 162, 235, 0.7)',
+                            'rgba(54, 162, 235, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)',
+                            'rgba(54, 162, 235, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                color: '#adb5bd'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#adb5bd'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#adb5bd'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Initialize Attendance Chart
+        function initializeAttendanceChart() {
+            const ctx = document.getElementById('attendanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4', 'Week 5', 'Week 6', 'Week 7', 'Week 8'],
+                    datasets: [{
+                        label: 'Present',
+                        data: [100, 100, 80, 100, 100, 90, 100, 80],
+                        fill: false,
+                        borderColor: 'rgba(40, 167, 69, 1)',
+                        tension: 0.1
+                    }, {
+                        label: 'Absent',
+                        data: [0, 0, 20, 0, 0, 10, 0, 20],
+                        fill: false,
+                        borderColor: 'rgba(220, 53, 69, 1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                color: '#adb5bd'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#adb5bd'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#adb5bd'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Initialize Engagement Chart
+        function initializeEngagementChart() {
+            const ctx = document.getElementById('engagementChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Class Participation', 'Discussions', 'Assignment Completion', 'Extra Activities', 'Peer Collaboration', 'Resource Usage'],
+                    datasets: [{
+                        label: 'Student Engagement',
+                        data: [65, 75, 90, 50, 85, 60],
+                        backgroundColor: 'rgba(0, 123, 255, 0.2)',
+                        borderColor: 'rgba(0, 123, 255, 1)',
+                        pointBackgroundColor: 'rgba(0, 123, 255, 1)',
+                        pointBorderColor: '#fff',
+                        pointHoverBackgroundColor: '#fff',
+                        pointHoverBorderColor: 'rgba(0, 123, 255, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        r: {
+                            angleLines: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            },
+                            pointLabels: {
+                                color: '#adb5bd'
+                            },
+                            ticks: {
+                                backdropColor: 'transparent',
+                                color: '#adb5bd'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#adb5bd'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Initialize Timeline Chart
+        function initializeTimelineChart() {
+            const ctx = document.getElementById('timelineChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+                    datasets: [{
+                        label: 'Grades',
+                        data: [75, 78, 80, 79, 85, 88, 89, 85, 87, 84, 82, 85],
+                        fill: false,
+                        borderColor: 'rgba(0, 123, 255, 1)',
+                        tension: 0.1
+                    }, {
+                        label: 'Attendance',
+                        data: [90, 95, 92, 88, 95, 100, 98, 95, 90, 92, 95, 98],
+                        fill: false,
+                        borderColor: 'rgba(40, 167, 69, 1)',
+                        tension: 0.1
+                    }, {
+                        label: 'Engagement',
+                        data: [60, 65, 68, 72, 75, 80, 78, 75, 78, 74, 70, 72],
+                        fill: false,
+                        borderColor: 'rgba(255, 193, 7, 1)',
+                        tension: 0.1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100,
+                            ticks: {
+                                color: '#adb5bd'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        },
+                        x: {
+                            ticks: {
+                                color: '#adb5bd'
+                            },
+                            grid: {
+                                color: 'rgba(255, 255, 255, 0.1)'
+                            }
+                        }
+                    },
+                    plugins: {
+                        legend: {
+                            labels: {
+                                color: '#adb5bd'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Initialize Course Performance Chart
+        function initializeCoursePerformanceChart() {
+            const ctx = document.getElementById('coursePerformanceChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Excellent', 'Good', 'Average', 'Below Average', 'Poor'],
+                    datasets: [{
+                        data: [30, 25, 20, 15, 10],
+                        backgroundColor: [
+                            'rgba(40, 167, 69, 0.7)',
+                            'rgba(0, 123, 255, 0.7)',
+                            'rgba(255, 193, 7, 0.7)',
+                            'rgba(255, 126, 0, 0.7)',
+                            'rgba(220, 53, 69, 0.7)'
+                        ],
+                        borderColor: [
+                            'rgba(40, 167, 69, 1)',
+                            'rgba(0, 123, 255, 1)',
+                            'rgba(255, 193, 7, 1)',
+                            'rgba(255, 126, 0, 1)',
+                            'rgba(220, 53, 69, 1)'
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'right',
+                            labels: {
+                                color: '#adb5bd'
+                            }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // Show alert function
+        function showAlert(message, type, containerId = 'alertContainer') {
+            let container = document.getElementById(containerId);
+            if (!container) {
+                container = document.createElement('div');
+                container.id = containerId;
+                container.className = 'position-fixed top-0 end-0 p-3';
+                container.style.zIndex = '5';
+                document.body.appendChild(container);
+            }
+            
+            const alertId = 'alert-' + Date.now();
+            const html = `
+                <div id="${alertId}" class="alert alert-${type} alert-dismissible fade show" role="alert">
+                    ${message}
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            `;
+            
+            container.innerHTML += html;
+            
+            // Auto dismiss after 5 seconds
+            setTimeout(() => {
+                const alertElement = document.getElementById(alertId);
+                if (alertElement) {
+                    const bsAlert = new bootstrap.Alert(alertElement);
+                    bsAlert.close();
+                }
+            }, 5000);
+        }
+    });
+</script>
+{% endblock %}

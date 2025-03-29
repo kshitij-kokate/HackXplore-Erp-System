@@ -1,0 +1,590 @@
+{% extends 'dashboard_layout.html' %}
+
+{% block title %}Learning Analytics{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h2 class="mb-0">Learning Analytics</h2>
+        <div>
+            <button class="btn btn-outline-light me-2"><i class="bi bi-sliders"></i> Custom Analytics</button>
+            <button class="btn btn-primary"><i class="bi bi-download"></i> Export Report</button>
+        </div>
+    </div>
+
+    <!-- Filters -->
+    <div class="card bg-dark border-0 mb-4">
+        <div class="card-body">
+            <div class="row mb-3">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <label for="courseSelect" class="form-label">Course</label>
+                    <select class="form-select bg-dark text-light border-secondary" id="courseSelect">
+                        <option selected>All Courses</option>
+                        <option>Data Structures</option>
+                        <option>Algorithms</option>
+                        <option>Database Management (CS302)</option>
+                        <option>Software Engineering</option>
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <label for="periodSelect" class="form-label">Period</label>
+                    <select class="form-select bg-dark text-light border-secondary" id="periodSelect">
+                        <option>Last Week</option>
+                        <option selected>Last Month</option>
+                        <option>Current Semester</option>
+                        <option>Academic Year</option>
+                    </select>
+                </div>
+                <div class="col-md-4">
+                    <label for="studentGroupSelect" class="form-label">Student Group</label>
+                    <select class="form-select bg-dark text-light border-secondary" id="studentGroupSelect">
+                        <option selected>All Students</option>
+                        <option>Computer Science</option>
+                        <option>Data Science</option>
+                        <option>Software Engineering</option>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Key Metrics -->
+    <div class="row mb-4">
+        <!-- Metric 1 -->
+        <div class="col-md-3 mb-4">
+            <div class="card bg-dark border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-end mb-2">
+                        <i class="bi bi-info-circle text-info"></i>
+                    </div>
+                    <h1 class="display-4 fw-bold text-primary mb-0">80.5%</h1>
+                    <p class="text-muted mb-0">Average Performance</p>
+                    <div class="d-flex align-items-center justify-content-center mt-2">
+                        <i class="bi bi-arrow-up text-success me-1"></i>
+                        <small class="text-success">2.3% vs last term</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Metric 2 -->
+        <div class="col-md-3 mb-4">
+            <div class="card bg-dark border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-end mb-2">
+                        <i class="bi bi-info-circle text-info"></i>
+                    </div>
+                    <h1 class="display-4 fw-bold text-success mb-0">87.8%</h1>
+                    <p class="text-muted mb-0">Engagement Rate</p>
+                    <div class="d-flex align-items-center justify-content-center mt-2">
+                        <i class="bi bi-arrow-up text-success me-1"></i>
+                        <small class="text-success">5.4% vs last term</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Metric 3 -->
+        <div class="col-md-3 mb-4">
+            <div class="card bg-dark border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-end mb-2">
+                        <i class="bi bi-info-circle text-info"></i>
+                    </div>
+                    <h1 class="display-4 fw-bold text-warning mb-0">92.3%</h1>
+                    <p class="text-muted mb-0">Course Satisfaction</p>
+                    <div class="d-flex align-items-center justify-content-center mt-2">
+                        <i class="bi bi-arrow-up text-success me-1"></i>
+                        <small class="text-success">1.7% vs last term</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Metric 4 -->
+        <div class="col-md-3 mb-4">
+            <div class="card bg-dark border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="d-flex justify-content-end mb-2">
+                        <i class="bi bi-info-circle text-info"></i>
+                    </div>
+                    <h1 class="display-4 fw-bold text-danger mb-0">10</h1>
+                    <p class="text-muted mb-0">At-Risk Students</p>
+                    <div class="d-flex align-items-center justify-content-center mt-2">
+                        <i class="bi bi-arrow-down text-success me-1"></i>
+                        <small class="text-success">3 fewer than last term</small>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 1 -->
+    <div class="row mb-4">
+        <!-- Performance Overview by Course -->
+        <div class="col-md-8 mb-4">
+            <div class="card bg-dark border-0">
+                <div class="card-header d-flex justify-content-between align-items-center bg-dark border-bottom border-secondary">
+                    <h5 class="mb-0">Performance Overview by Course</h5>
+                    <div>
+                        <button class="btn btn-sm btn-outline-secondary active">Week</button>
+                        <button class="btn btn-sm btn-outline-secondary">Month</button>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="performanceChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Student Risk Distribution -->
+        <div class="col-md-4 mb-4">
+            <div class="card bg-dark border-0 h-100">
+                <div class="card-header d-flex justify-content-between align-items-center bg-dark border-bottom border-secondary">
+                    <h5 class="mb-0">Student Risk Distribution</h5>
+                </div>
+                <div class="card-body">
+                    <canvas id="riskDistributionChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Row 2 -->
+    <div class="row mb-4">
+        <!-- Assignment Submission Timeline -->
+        <div class="col-md-6 mb-4">
+            <div class="card bg-dark border-0">
+                <div class="card-header d-flex justify-content-between align-items-center bg-dark border-bottom border-secondary">
+                    <h5 class="mb-0">Assignment Submission Timeline</h5>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="showAllSubmissionToggle">
+                        <label class="form-check-label" for="showAllSubmissionToggle">Show All</label>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="submissionTimelineChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Student Engagement Metrics -->
+        <div class="col-md-6 mb-4">
+            <div class="card bg-dark border-0">
+                <div class="card-header d-flex justify-content-between align-items-center bg-dark border-bottom border-secondary">
+                    <h5 class="mb-0">Student Engagement Metrics</h5>
+                    <div class="form-check form-switch">
+                        <input class="form-check-input" type="checkbox" id="showAverageToggle" checked>
+                        <label class="form-check-label" for="showAverageToggle">Show Average</label>
+                    </div>
+                </div>
+                <div class="card-body">
+                    <canvas id="engagementRadarChart" height="300"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI-Generated Insights Section -->
+    <div class="card bg-dark border-0 mb-4">
+        <div class="card-header bg-dark border-bottom border-secondary">
+            <h5 class="mb-0">AI-Generated Learning Insights</h5>
+        </div>
+        <div class="card-body">
+            <!-- Insight 1 -->
+            <div class="alert alert-danger mb-3">
+                <h6 class="alert-heading">At-Risk Student Alert</h6>
+                <p class="mb-0">10 students have shown declining performance levels over the last 3 weeks, with average scores dropping by more than 10%.</p>
+                <p class="mb-0"><strong>Recommendation:</strong> Consider scheduling individual meetings with these students to address challenges.</p>
+            </div>
+            
+            <!-- Insight 2 -->
+            <div class="alert alert-warning mb-3">
+                <h6 class="alert-heading">Assignment Completion Pattern</h6>
+                <p class="mb-0">Assignment #3 (Linear Regression) is significantly lower in score (60%) compared to other assignments (80%).</p>
+                <p class="mb-0"><strong>Recommendation:</strong> Review concepts relating to predictive statistical exercises in this class.</p>
+            </div>
+            
+            <!-- Insight 3 -->
+            <div class="alert alert-success mb-3">
+                <h6 class="alert-heading">Strength Areas</h6>
+                <p class="mb-0">Students are performing better in discussion-based assessments with higher participation vs. other assignments.</p>
+                <p class="mb-0"><strong>Recommendation:</strong> Encourage more peer participation through group discussions.</p>
+            </div>
+            
+            <!-- Insight 4 -->
+            <div class="alert alert-info mb-3">
+                <h6 class="alert-heading">Learning Pattern Observation</h6>
+                <p class="mb-0">Open-ended collaborative assignments have higher engagement (30% compared to other instructional styles).</p>
+                <p class="mb-0"><strong>Recommendation:</strong> Consider integrating more open-ended collaborative exercises to drive engagement.</p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Student Table -->
+    <div class="card bg-dark border-0 mb-4">
+        <div class="card-header bg-dark border-bottom border-secondary">
+            <h5 class="mb-0">Student Performance Details</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="table-responsive">
+                <table class="table table-dark table-hover mb-0">
+                    <thead>
+                        <tr>
+                            <th>Student</th>
+                            <th>Course Grade</th>
+                            <th>Attendance %</th>
+                            <th>Assignments</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>John Smith</td>
+                            <td>92%</td>
+                            <td>95%</td>
+                            <td>17/20</td>
+                            <td><span class="badge bg-success">Excellent</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary">View</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Emma Johnson</td>
+                            <td>78%</td>
+                            <td>82%</td>
+                            <td>15/20</td>
+                            <td><span class="badge bg-warning">Average</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary">View</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Michael Brown</td>
+                            <td>65%</td>
+                            <td>70%</td>
+                            <td>13/20</td>
+                            <td><span class="badge bg-danger">At Risk</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary">View</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Sarah Davis</td>
+                            <td>88%</td>
+                            <td>90%</td>
+                            <td>18/20</td>
+                            <td><span class="badge bg-success">Excellent</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary">View</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>David Wilson</td>
+                            <td>72%</td>
+                            <td>85%</td>
+                            <td>14/20</td>
+                            <td><span class="badge bg-warning">Average</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary">View</button>
+                            </td>
+                        </tr>
+                        <tr>
+                            <td>Jennifer Lee</td>
+                            <td>95%</td>
+                            <td>98%</td>
+                            <td>20/20</td>
+                            <td><span class="badge bg-success">Excellent</span></td>
+                            <td>
+                                <button class="btn btn-sm btn-primary">View</button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Competency Management -->
+    <div class="card bg-dark border-0 mb-4">
+        <div class="card-header bg-dark border-bottom border-secondary">
+            <h5 class="mb-0">Competency Management</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Classroom Management</h6>
+                    <div class="progress mb-1" style="height: 25px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">85%</div>
+                    </div>
+                    <p class="text-muted small">Based on student feedback and observation data</p>
+                    
+                    <h6 class="mt-4">AI Usage</h6>
+                    <div class="progress mb-1" style="height: 25px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100">70%</div>
+                    </div>
+                    <p class="text-muted small">Incorporation of AI tools in teaching</p>
+                    
+                    <h6 class="mt-4">Assessment</h6>
+                    <div class="progress mb-1" style="height: 25px;">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: 90%;" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">90%</div>
+                    </div>
+                    <p class="text-muted small">Effectiveness of assessment strategies</p>
+                    
+                    <h6 class="mt-4">Student Engagement</h6>
+                    <div class="progress mb-1" style="height: 25px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 75%;" aria-valuenow="75" aria-valuemin="0" aria-valuemax="100">75%</div>
+                    </div>
+                    <p class="text-muted small">Student participation and interaction</p>
+                </div>
+                <div class="col-md-6">
+                    <h6>Adaptive Learning</h6>
+                    <div class="progress mb-1" style="height: 25px;">
+                        <div class="progress-bar bg-success" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100">65%</div>
+                    </div>
+                    <p class="text-muted small">Personalization of learning experiences</p>
+                    
+                    <h6 class="mt-4">Feedback Provision</h6>
+                    <div class="progress mb-1" style="height: 25px;">
+                        <div class="progress-bar bg-primary" role="progressbar" style="width: 80%;" aria-valuenow="80" aria-valuemin="0" aria-valuemax="100">80%</div>
+                    </div>
+                    <p class="text-muted small">Quality and timeliness of feedback</p>
+                    
+                    <h6 class="mt-4">Content Delivery</h6>
+                    <div class="progress mb-1" style="height: 25px;">
+                        <div class="progress-bar bg-info" role="progressbar" style="width: 85%;" aria-valuenow="85" aria-valuemin="0" aria-valuemax="100">85%</div>
+                    </div>
+                    <p class="text-muted small">Effectiveness of teaching materials and methods</p>
+                    
+                    <h6 class="mt-4">Problem Solving</h6>
+                    <div class="progress mb-1" style="height: 25px;">
+                        <div class="progress-bar bg-warning" role="progressbar" style="width: 70%;" aria-valuenow="70" aria-valuemin="0" aria-valuemax="100">70%</div>
+                    </div>
+                    <p class="text-muted small">Integration of problem-solving scenarios</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Performance Chart
+    const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+    const performanceChart = new Chart(performanceCtx, {
+        type: 'bar',
+        data: {
+            labels: ['Data Structures', 'Algorithms', 'Database Management', 'Web Development', 'Machine Learning'],
+            datasets: [{
+                label: 'Class Performance',
+                data: [82, 75, 90, 68, 78],
+                backgroundColor: 'rgba(13, 110, 253, 0.7)',
+                borderColor: 'rgba(13, 110, 253, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        color: '#adb5bd'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#adb5bd'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#adb5bd'
+                    }
+                }
+            }
+        }
+    });
+    
+    // Risk Distribution Chart
+    const riskCtx = document.getElementById('riskDistributionChart').getContext('2d');
+    const riskChart = new Chart(riskCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Excellent', 'Good', 'Average', 'At Risk', 'Critical'],
+            datasets: [{
+                data: [35, 25, 20, 15, 5],
+                backgroundColor: [
+                    'rgba(40, 167, 69, 0.7)',
+                    'rgba(13, 110, 253, 0.7)',
+                    'rgba(255, 193, 7, 0.7)',
+                    'rgba(253, 126, 20, 0.7)',
+                    'rgba(220, 53, 69, 0.7)'
+                ],
+                borderColor: [
+                    'rgba(40, 167, 69, 1)',
+                    'rgba(13, 110, 253, 1)',
+                    'rgba(255, 193, 7, 1)',
+                    'rgba(253, 126, 20, 1)',
+                    'rgba(220, 53, 69, 1)'
+                ],
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: 'right',
+                    labels: {
+                        color: '#adb5bd'
+                    }
+                }
+            }
+        }
+    });
+    
+    // Submission Timeline Chart
+    const submissionCtx = document.getElementById('submissionTimelineChart').getContext('2d');
+    const submissionChart = new Chart(submissionCtx, {
+        type: 'line',
+        data: {
+            labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'],
+            datasets: [{
+                label: 'On-time Submissions',
+                data: [80, 85, 75, 90, 85, 95, 90, 85, 80, 85, 90, 85],
+                fill: false,
+                borderColor: 'rgba(40, 167, 69, 1)',
+                tension: 0.4
+            }, {
+                label: 'Late Submissions',
+                data: [20, 15, 25, 10, 15, 5, 10, 15, 20, 15, 10, 15],
+                fill: false,
+                borderColor: 'rgba(220, 53, 69, 1)',
+                tension: 0.4
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    max: 100,
+                    ticks: {
+                        color: '#adb5bd'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                },
+                x: {
+                    ticks: {
+                        color: '#adb5bd'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#adb5bd'
+                    }
+                }
+            }
+        }
+    });
+    
+    // Engagement Radar Chart
+    const engagementCtx = document.getElementById('engagementRadarChart').getContext('2d');
+    const engagementChart = new Chart(engagementCtx, {
+        type: 'radar',
+        data: {
+            labels: ['Assignments', 'Discussions', 'Attendance', 'Group Work', 'Quizzes', 'Exams'],
+            datasets: [{
+                label: 'Average Class Engagement',
+                data: [65, 75, 90, 80, 70, 85],
+                backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                borderColor: 'rgba(13, 110, 253, 1)',
+                pointBackgroundColor: 'rgba(13, 110, 253, 1)',
+                pointBorderColor: '#fff',
+                pointHoverBackgroundColor: '#fff',
+                pointHoverBorderColor: 'rgba(13, 110, 253, 1)'
+            }]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            scales: {
+                r: {
+                    angleLines: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    grid: {
+                        color: 'rgba(255, 255, 255, 0.1)'
+                    },
+                    pointLabels: {
+                        color: '#adb5bd'
+                    },
+                    ticks: {
+                        backdropColor: 'transparent',
+                        color: '#adb5bd'
+                    }
+                }
+            },
+            plugins: {
+                legend: {
+                    labels: {
+                        color: '#adb5bd'
+                    }
+                }
+            }
+        }
+    });
+    
+    // Toggle Switches
+    document.getElementById('showAllSubmissionToggle').addEventListener('change', function() {
+        // In a real application, this would update the chart
+        console.log('Toggle submission view:', this.checked);
+    });
+    
+    document.getElementById('showAverageToggle').addEventListener('change', function() {
+        // In a real application, this would update the chart
+        console.log('Toggle average view:', this.checked);
+    });
+    
+    // Filter Change Events
+    document.getElementById('courseSelect').addEventListener('change', function() {
+        // In a real application, this would update the charts
+        console.log('Course selected:', this.value);
+    });
+    
+    document.getElementById('periodSelect').addEventListener('change', function() {
+        // In a real application, this would update the charts
+        console.log('Period selected:', this.value);
+    });
+    
+    document.getElementById('studentGroupSelect').addEventListener('change', function() {
+        // In a real application, this would update the charts
+        console.log('Student group selected:', this.value);
+    });
+});
+</script>
+{% endblock %}

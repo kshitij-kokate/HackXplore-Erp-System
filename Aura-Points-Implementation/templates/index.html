@@ -1,0 +1,237 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart Academic Assistant - Home{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-body">
+                <h2 class="card-title mb-4">Welcome to Smart Academic Assistant</h2>
+                <p class="lead">
+                    Your AI-driven academic companion designed to enhance your educational experience.
+                </p>
+                <p>
+                    Our platform offers personalized learning paths, research discovery tools, and intelligent scheduling to help you succeed in your academic journey.
+                </p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card mb-3">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-user-graduate me-2"></i>
+                    Current User
+                </h5>
+                <p class="card-text">Signed in as <strong>{{ user.username }}</strong></p>
+                <p class="card-text">
+                    <span class="badge bg-primary">{{ user.role }}</span>
+                </p>
+            </div>
+        </div>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">
+                    <i class="fas fa-bell me-2"></i>
+                    Notifications
+                </h5>
+                <div class="list-group list-group-flush">
+                    <div class="list-group-item border-0 p-0 pb-2">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">New meeting request</h6>
+                            <small>3 hours ago</small>
+                        </div>
+                        <p class="mb-1">Professor requested a meeting about your research project.</p>
+                    </div>
+                    <div class="list-group-item border-0 p-0 pb-2">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h6 class="mb-1">Course recommendation</h6>
+                            <small>1 day ago</small>
+                        </div>
+                        <p class="mb-1">Check out the new course recommendations based on your profile.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<h3 class="mb-4">Main Features</h3>
+
+<div class="row">
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-route feature-icon text-primary"></i>
+                <h4 class="card-title">Adaptive Learning Paths</h4>
+                <p class="card-text">
+                    Get personalized course recommendations based on your academic history and learning patterns.
+                </p>
+                <a href="{{ url_for('learning') }}" class="btn btn-primary mt-auto">
+                    Explore Courses
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-search feature-icon text-info"></i>
+                <h4 class="card-title">Research Discovery</h4>
+                <p class="card-text">
+                    Find relevant research papers and potential collaborators based on your interests.
+                </p>
+                <a href="{{ url_for('research') }}" class="btn btn-info mt-auto">
+                    Discover Research
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-4 mb-4">
+        <div class="card feature-card h-100">
+            <div class="card-body text-center">
+                <i class="fas fa-calendar-alt feature-icon text-success"></i>
+                <h4 class="card-title">Scheduling Assistant</h4>
+                <p class="card-text">
+                    Optimize your schedule with our intelligent meeting and task scheduling system.
+                </p>
+                <a href="{{ url_for('scheduler') }}" class="btn btn-success mt-auto">
+                    Manage Schedule
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Recent Activity</h4>
+            </div>
+            <div class="card-body">
+                <div class="list-group">
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Completed "Machine Learning Fundamentals"</h5>
+                            <small>2 days ago</small>
+                        </div>
+                        <p class="mb-1">You've successfully completed the course with a score of 92%.</p>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Meeting with Research Advisor</h5>
+                            <small>3 days ago</small>
+                        </div>
+                        <p class="mb-1">Discussed progress on the current research project and next steps.</p>
+                    </div>
+                    <div class="list-group-item">
+                        <div class="d-flex w-100 justify-content-between">
+                            <h5 class="mb-1">Saved Research Paper</h5>
+                            <small>5 days ago</small>
+                        </div>
+                        <p class="mb-1">"Natural Language Processing for Academic Research" added to your library.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Upcoming Meetings</h4>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for meeting in upcoming_meetings %}
+                    <li class="list-group-item">
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <h5 class="mb-1">{{ meeting.title }}</h5>
+                                <p class="mb-1">{{ meeting.description }}</p>
+                                <small>
+                                    <i class="fas fa-calendar me-1"></i>
+                                    {{ meeting.start_time|datetime }}
+                                </small>
+                            </div>
+                            <span class="badge {% if meeting.status == 'confirmed' %}bg-success{% else %}bg-warning text-dark{% endif %}">
+                                {{ meeting.status }}
+                            </span>
+                        </div>
+                    </li>
+                    {% else %}
+                    <li class="list-group-item">
+                        <p class="mb-0 text-muted">No upcoming meetings scheduled.</p>
+                    </li>
+                    {% endfor %}
+                </ul>
+            </div>
+            <div class="card-footer">
+                <a href="{{ url_for('scheduler') }}" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-calendar-plus me-1"></i>
+                    Schedule New Meeting
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Course Progress</h4>
+            </div>
+            <div class="card-body">
+                <canvas id="courseProgressChart" width="400" height="300"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Course progress chart
+        const ctx = document.getElementById('courseProgressChart').getContext('2d');
+        const courseProgressChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completed', 'In Progress', 'Planned'],
+                datasets: [{
+                    label: 'Course Progress',
+                    data: [2, 2, 3],
+                    backgroundColor: [
+                        'rgba(40, 167, 69, 0.8)',
+                        'rgba(0, 123, 255, 0.8)',
+                        'rgba(108, 117, 125, 0.8)'
+                    ],
+                    borderColor: [
+                        'rgba(40, 167, 69, 1)',
+                        'rgba(0, 123, 255, 1)',
+                        'rgba(108, 117, 125, 1)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    },
+                    title: {
+                        display: true,
+                        text: 'Course Status Distribution'
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

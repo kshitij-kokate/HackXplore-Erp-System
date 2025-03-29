@@ -1,0 +1,411 @@
+{% extends "layout.html" %}
+
+{% block page_title %}Student Management{% endblock %}
+
+{% block page_actions %}
+<div class="btn-group me-2">
+    <button type="button" class="btn btn-sm btn-outline-secondary" data-bs-toggle="modal" data-bs-target="#importStudentsModal">
+        <i class="fas fa-file-import me-1"></i> Import
+    </button>
+    <button type="button" class="btn btn-sm btn-outline-secondary">
+        <i class="fas fa-file-export me-1"></i> Export
+    </button>
+</div>
+<button type="button" class="btn btn-sm btn-primary" data-bs-toggle="modal" data-bs-target="#generateGroupsModal">
+    <i class="fas fa-users me-1"></i> Generate Groups
+</button>
+{% endblock %}
+
+{% block content %}
+<div id="alertContainer"></div>
+
+<!-- Filter and Search -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row g-3">
+            <div class="col-md-3">
+                <label for="courseFilter" class="form-label">Course</label>
+                <select class="form-select" id="courseFilter">
+                    <option value="">All Courses</option>
+                    <option value="cs301">Data Structures (CS301)</option>
+                    <option value="cs302">Database Management (CS302)</option>
+                    <option value="cs303">Web Development (CS303)</option>
+                    <option value="cs405">Cybersecurity (CS405)</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="yearFilter" class="form-label">Year</label>
+                <select class="form-select" id="yearFilter">
+                    <option value="">All Years</option>
+                    <option value="1">Year 1</option>
+                    <option value="2">Year 2</option>
+                    <option value="3">Year 3</option>
+                    <option value="4">Year 4</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="riskFilter" class="form-label">Risk Status</label>
+                <select class="form-select" id="riskFilter">
+                    <option value="">All Statuses</option>
+                    <option value="low">Low Risk</option>
+                    <option value="medium">Medium Risk</option>
+                    <option value="high">High Risk</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="searchStudents" class="form-label">Search</label>
+                <input type="text" class="form-control" id="searchStudents" placeholder="Search students...">
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Student Statistics -->
+<div class="card mb-4">
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-users fa-2x text-primary"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h6 class="mb-0">Total Students</h6>
+                        <h2 class="mb-0">{{ total_students }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-book fa-2x text-success"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h6 class="mb-0">Total Courses</h6>
+                        <h2 class="mb-0">{{ total_courses }}</h2>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="d-flex align-items-center">
+                    <div class="flex-shrink-0">
+                        <i class="fas fa-graduation-cap fa-2x text-info"></i>
+                    </div>
+                    <div class="flex-grow-1 ms-3">
+                        <h6 class="mb-0">Active Enrollments</h6>
+                        <h2 class="mb-0">{{ total_enrollments }}</h2>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Students Table -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Students List</h5>
+        <div class="btn-group btn-group-sm">
+            <button type="button" class="btn btn-outline-secondary active">All</button>
+            <button type="button" class="btn btn-outline-secondary">Active</button>
+            <button type="button" class="btn btn-outline-secondary">At Risk</button>
+        </div>
+    </div>
+    <div class="card-body">
+        <div class="table-responsive">
+            <table class="table table-hover align-middle">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>Email</th>
+                        <th>Program</th>
+                        <th>Year</th>
+                        <th>Average Grade</th>
+                        <th>Status</th>
+                        <th>Risk Level</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody id="studentsList">
+                    {% for student in students %}
+                    <tr>
+                        <td>{{ student.username }}</td>
+                        <td>{{ student.email }}</td>
+                        <td>{{ student.department }}</td>
+                        <td>{{ student.year_of_study }}</td>
+                        <td>85%</td>
+                        <td><span class="badge bg-success">Active</span></td>
+                        <td><span class="badge bg-warning text-dark">Medium</span></td>
+                        <td>
+                            <div class="dropdown">
+                                <button class="btn btn-sm btn-outline-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                                    Actions
+                                </button>
+                                <ul class="dropdown-menu">
+                                    <li><a class="dropdown-item" href="#" data-bs-toggle="modal" data-bs-target="#allocateCourseModal" data-student-id="{{ student.id }}">Allocate Course</a></li>
+                                    <li><a class="dropdown-item" href="#">View Progress</a></li>
+                                    <li><a class="dropdown-item" href="#">Send Message</a></li>
+                                </ul>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+    <div class="card-footer">
+        <nav aria-label="Students pagination">
+            <ul class="pagination justify-content-center mb-0">
+                <li class="page-item disabled">
+                    <a class="page-link" href="#" tabindex="-1" aria-disabled="true">Previous</a>
+                </li>
+                <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                <li class="page-item"><a class="page-link" href="#">2</a></li>
+                <li class="page-item"><a class="page-link" href="#">3</a></li>
+                <li class="page-item">
+                    <a class="page-link" href="#">Next</a>
+                </li>
+            </ul>
+        </nav>
+    </div>
+</div>
+
+<!-- Student Details Card -->
+<div class="card mb-4 d-none" id="studentDetailsContainer">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0" id="detailsStudentName">Student Name</h5>
+        <button type="button" class="btn-close" aria-label="Close" onclick="document.getElementById('studentDetailsContainer').classList.add('d-none')"></button>
+    </div>
+    <div class="card-body" id="studentDetails">
+        <!-- Student details will be loaded dynamically -->
+    </div>
+</div>
+
+<!-- Student Analytics -->
+<div class="card mb-4 d-none" id="studentAnalyticsContainer">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="card-title mb-0">Student Performance Analytics</h5>
+        <button type="button" class="btn-close" aria-label="Close" onclick="document.getElementById('studentAnalyticsContainer').classList.add('d-none')"></button>
+    </div>
+    <div class="card-body">
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card analytics-card">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">Grade Trend</h6>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="gradeTrendChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card analytics-card">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">Attendance by Course</h6>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="attendanceChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card analytics-card">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">Engagement Metrics</h6>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="engagementChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card analytics-card">
+                    <div class="card-header bg-light">
+                        <h6 class="mb-0">Assignment Submission Timeline</h6>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="assignmentTimelineChart" height="250"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- AI Recommendations Container -->
+<div class="card mb-4 d-none" id="aiRecommendationsContainer">
+    <!-- AI recommendations will be loaded dynamically -->
+</div>
+
+<!-- AI Group Generation -->
+<div class="card mb-4 d-none" id="aiGroupsContainer">
+    <!-- AI group results will be loaded dynamically -->
+</div>
+
+<!-- Allocate Course Modal -->
+<div class="modal fade" id="allocateCourseModal" tabindex="-1">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Allocate Course</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <form action="{{ url_for('allocate_course') }}" method="POST">
+                <div class="modal-body">
+                    <input type="hidden" name="student_id" id="modalStudentId">
+                    <div class="mb-3">
+                        <label for="courseSelect" class="form-label">Select Course</label>
+                        <select class="form-select" id="courseSelect" name="course_id" required>
+                            {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.code }} - {{ course.name }}</option>
+                            {% endfor %}
+                        </select>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Allocate</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Handle student ID in course allocation modal
+        var allocateCourseModal = document.getElementById('allocateCourseModal');
+        if (allocateCourseModal) {
+            allocateCourseModal.addEventListener('show.bs.modal', function(event) {
+                var button = event.relatedTarget;
+                var studentId = button.getAttribute('data-student-id');
+                var modalStudentIdInput = document.getElementById('modalStudentId');
+                modalStudentIdInput.value = studentId;
+            });
+        }
+    });
+</script>
+{% endblock %}
+
+<!-- Message Modal -->
+<div class="modal fade" id="messageModal" tabindex="-1" aria-labelledby="messageModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="messageModalLabel">Send Message</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div id="messageAlertContainer"></div>
+                <form id="messageForm">
+                    <input type="hidden" id="messageStudentId" value="">
+                    <div class="mb-3">
+                        <label for="messageSubject" class="form-label">Subject</label>
+                        <input type="text" class="form-control" id="messageSubject" placeholder="Enter subject...">
+                    </div>
+                    <div class="mb-3">
+                        <label for="messageText" class="form-label">Message</label>
+                        <textarea class="form-control" id="messageText" rows="5" placeholder="Write your message here..." required></textarea>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="sendCopy">
+                        <label class="form-check-label" for="sendCopy">Send myself a copy</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary" form="messageForm">Send Message</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Import Students Modal -->
+<div class="modal fade" id="importStudentsModal" tabindex="-1" aria-labelledby="importStudentsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="importStudentsModalLabel">Import Students</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="importForm">
+                    <div class="mb-3">
+                        <label for="importCourse" class="form-label">Course</label>
+                        <select class="form-select" id="importCourse" required>
+                            <option value="">Select Course</option>
+                            <option value="cs301">Data Structures (CS301)</option>
+                            <option value="cs302">Database Management (CS302)</option>
+                            <option value="cs303">Web Development (CS303)</option>
+                            <option value="cs405">Cybersecurity (CS405)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="importFile" class="form-label">CSV File</label>
+                        <input type="file" class="form-control" id="importFile" accept=".csv" required>
+                        <div class="form-text">Upload a CSV file with student information.</div>
+                    </div>
+                    <div class="mb-3 form-check">
+                        <input type="checkbox" class="form-check-input" id="overwriteExisting">
+                        <label class="form-check-label" for="overwriteExisting">Overwrite existing students</label>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="submit" class="btn btn-primary" form="importForm">Import</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Generate Groups Modal -->
+<div class="modal fade" id="generateGroupsModal" tabindex="-1" aria-labelledby="generateGroupsModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="generateGroupsModalLabel">AI-Powered Group Generation</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> The AI will create balanced groups based on student performance, skills, and learning styles.
+                </div>
+                <form id="groupsForm">
+                    <div class="mb-3">
+                        <label for="groupCourseSelect" class="form-label">Course</label>
+                        <select class="form-select" id="groupCourseSelect" required>
+                            <option value="">Select Course</option>
+                            <option value="cs301">Data Structures (CS301)</option>
+                            <option value="cs302">Database Management (CS302)</option>
+                            <option value="cs303">Web Development (CS303)</option>
+                            <option value="cs405">Cybersecurity (CS405)</option>
+                        </select>
+                    </div>
+                    <div class="mb-3">
+                        <label for="groupSizeInput" class="form-label">Group Size</label>
+                        <input type="number" class="form-control" id="groupSizeInput" min="2" max="6" value="3" required>
+                    </div>
+                    <div class="mb-3">
+                        <label for="groupingCriteriaSelect" class="form-label">Grouping Criteria</label>
+                        <select class="form-select" id="groupingCriteriaSelect" required>
+                            <option value="balanced">Balanced Skill Levels</option>
+                            <option value="performance">Similar Performance</option>
+                            <option value="learning_style">Compatible Learning Styles</option>
+                            <option value="diversity">Maximum Diversity</option>
+                        </select>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="generateGroupsBtn">Generate Groups</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

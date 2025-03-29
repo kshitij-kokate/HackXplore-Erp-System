@@ -1,0 +1,69 @@
+/* 
+ * GitHub Integration Light Theme Fixes 
+ * This CSS file contains fixes for the GitHub Integration page when using the light theme
+ */
+
+/* Card background and border fixes */
+.card.bg-dark {
+    background-color: #fff !important;
+    border: 1px solid rgba(0, 0, 0, 0.125) !important;
+}
+
+.card-header.bg-dark {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125) !important;
+}
+
+/* Text color fixes */
+.text-light {
+    color: #212529 !important;
+}
+
+/* List group fixes */
+.list-group-flush.bg-dark {
+    background-color: #fff !important;
+}
+
+.list-group-item.bg-dark {
+    background-color: #fff !important;
+    color: #212529 !important;
+    border-color: rgba(0, 0, 0, 0.125) !important;
+}
+
+/* Border fixes */
+.border-secondary {
+    border-color: #dee2e6 !important;
+}
+
+/* Form control fixes */
+.form-control.bg-dark, 
+.form-select.bg-dark {
+    background-color: #fff !important;
+    color: #212529 !important;
+    border-color: #ced4da !important;
+}
+
+/* Repository status badges */
+.badge.bg-success {
+    background-color: #198754 !important;
+}
+
+.badge.bg-warning {
+    background-color: #ffc107 !important;
+    color: #212529 !important;
+}
+
+.badge.bg-danger {
+    background-color: #dc3545 !important;
+}
+
+/* Modal styling */
+.modal-content.bg-dark {
+    background-color: #fff !important;
+    color: #212529 !important;
+}
+
+.btn-close-white {
+    filter: none !important;
+}

@@ -1,0 +1,489 @@
+{% extends 'dashboard_layout.html' %}
+
+{% block title %}Assignments{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">Assignments</h2>
+        <button class="btn btn-primary" id="createAssignmentBtn">
+            <i class="bi bi-plus-lg"></i> Create Assignment
+        </button>
+    </div>
+
+    <!-- Filters -->
+    <div class="card bg-dark border-0 mb-4">
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3">
+                    <label for="filterTitle" class="form-label">Title</label>
+                    <input type="text" class="form-control bg-dark text-light border-secondary" id="filterTitle" placeholder="Assignment Title">
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="filterCourse" class="form-label">Course</label>
+                    <select class="form-select bg-dark text-light border-secondary" id="filterCourse">
+                        <option selected>All Courses</option>
+                        {% for course in courses %}
+                        <option value="{{ course.id }}">{{ course.name }}</option>
+                        {% endfor %}
+                        {% if not courses %}
+                        <option value="1">Data Structures</option>
+                        <option value="2">Algorithms</option>
+                        <option value="3">Database Management</option>
+                        {% endif %}
+                    </select>
+                </div>
+                <div class="col-md-4 mb-3">
+                    <label for="filterStatus" class="form-label">Status</label>
+                    <select class="form-select bg-dark text-light border-secondary" id="filterStatus">
+                        <option selected>All Assignments</option>
+                        <option value="active">Active</option>
+                        <option value="upcoming">Upcoming</option>
+                        <option value="past">Past</option>
+                    </select>
+                </div>
+            </div>
+            <div class="d-flex justify-content-end">
+                <button class="btn btn-primary btn-sm" id="filterBtn">Filter</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Assignments Table -->
+    <div class="card bg-dark border-0 mb-4">
+        <div class="card-header bg-dark border-bottom border-secondary">
+            <div class="row align-items-center">
+                <div class="col-2">Assignment Title</div>
+                <div class="col-2">Course</div>
+                <div class="col-2">Due Date</div>
+                <div class="col-2">Status</div>
+                <div class="col-2">Submissions</div>
+                <div class="col-2">Actions</div>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+                {% for assignment in assignments %}
+                <div class="list-group-item bg-dark border-bottom border-secondary py-3">
+                    <div class="row align-items-center">
+                        <div class="col-2 fw-semibold">{{ assignment.title }}</div>
+                        <div class="col-2">{{ assignment.course }}</div>
+                        <div class="col-2">{{ assignment.due_date }}</div>
+                        <div class="col-2">
+                            {% if assignment.status == 'active' %}
+                            <span class="badge bg-success">Active</span>
+                            {% elif assignment.status == 'upcoming' %}
+                            <span class="badge bg-info">Upcoming</span>
+                            {% else %}
+                            <span class="badge bg-secondary">Past</span>
+                            {% endif %}
+                        </div>
+                        <div class="col-2">
+                            <div class="progress bg-dark">
+                                <div class="progress-bar bg-primary" style="width: {{ assignment.submission_percentage|default(75) }}%"></div>
+                            </div>
+                            <small class="text-muted">{{ assignment.submission_count|default(15) }}/{{ assignment.student_count|default(20) }}</small>
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-sm btn-info me-1" title="View"><i class="bi bi-eye"></i></button>
+                            <button class="btn btn-sm btn-warning me-1" title="Edit"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+                {% else %}
+                <!-- Sample data if no assignments are available -->
+                <div class="list-group-item bg-dark border-bottom border-secondary py-3">
+                    <div class="row align-items-center">
+                        <div class="col-2 fw-semibold">Midterm Project</div>
+                        <div class="col-2">Data Structures</div>
+                        <div class="col-2">April 15, 2025</div>
+                        <div class="col-2"><span class="badge bg-success">Active</span></div>
+                        <div class="col-2">
+                            <div class="progress bg-dark">
+                                <div class="progress-bar bg-primary" style="width: 75%"></div>
+                            </div>
+                            <small class="text-muted">15/20</small>
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-sm btn-info me-1" title="View"><i class="bi bi-eye"></i></button>
+                            <button class="btn btn-sm btn-warning me-1" title="Edit"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group-item bg-dark border-bottom border-secondary py-3">
+                    <div class="row align-items-center">
+                        <div class="col-2 fw-semibold">Final Project</div>
+                        <div class="col-2">Algorithms</div>
+                        <div class="col-2">May 20, 2025</div>
+                        <div class="col-2"><span class="badge bg-info">Upcoming</span></div>
+                        <div class="col-2">
+                            <div class="progress bg-dark">
+                                <div class="progress-bar bg-primary" style="width: 0%"></div>
+                            </div>
+                            <small class="text-muted">0/18</small>
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-sm btn-info me-1" title="View"><i class="bi bi-eye"></i></button>
+                            <button class="btn btn-sm btn-warning me-1" title="Edit"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group-item bg-dark border-bottom border-secondary py-3">
+                    <div class="row align-items-center">
+                        <div class="col-2 fw-semibold">Weekly Assignment 3</div>
+                        <div class="col-2">Database Management</div>
+                        <div class="col-2">March 10, 2025</div>
+                        <div class="col-2"><span class="badge bg-secondary">Past</span></div>
+                        <div class="col-2">
+                            <div class="progress bg-dark">
+                                <div class="progress-bar bg-primary" style="width: 90%"></div>
+                            </div>
+                            <small class="text-muted">18/20</small>
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-sm btn-info me-1" title="View"><i class="bi bi-eye"></i></button>
+                            <button class="btn btn-sm btn-warning me-1" title="Edit"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group-item bg-dark border-bottom border-secondary py-3">
+                    <div class="row align-items-center">
+                        <div class="col-2 fw-semibold">Research Paper</div>
+                        <div class="col-2">Machine Learning</div>
+                        <div class="col-2">April 5, 2025</div>
+                        <div class="col-2"><span class="badge bg-success">Active</span></div>
+                        <div class="col-2">
+                            <div class="progress bg-dark">
+                                <div class="progress-bar bg-primary" style="width: 60%"></div>
+                            </div>
+                            <small class="text-muted">12/20</small>
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-sm btn-info me-1" title="View"><i class="bi bi-eye"></i></button>
+                            <button class="btn btn-sm btn-warning me-1" title="Edit"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+                <div class="list-group-item bg-dark border-bottom border-secondary py-3">
+                    <div class="row align-items-center">
+                        <div class="col-2 fw-semibold">Design Challenge</div>
+                        <div class="col-2">Web Development</div>
+                        <div class="col-2">April 20, 2025</div>
+                        <div class="col-2"><span class="badge bg-success">Active</span></div>
+                        <div class="col-2">
+                            <div class="progress bg-dark">
+                                <div class="progress-bar bg-primary" style="width: 40%"></div>
+                            </div>
+                            <small class="text-muted">8/20</small>
+                        </div>
+                        <div class="col-2">
+                            <button class="btn btn-sm btn-info me-1" title="View"><i class="bi bi-eye"></i></button>
+                            <button class="btn btn-sm btn-warning me-1" title="Edit"><i class="bi bi-pencil"></i></button>
+                            <button class="btn btn-sm btn-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Feature Boxes -->
+    <div class="row mb-4">
+        <div class="col-md-4">
+            <div class="card bg-dark border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3 d-inline-block mb-3">
+                        <i class="bi bi-check2-circle text-success fs-3"></i>
+                    </div>
+                    <h5>Auto Grading</h5>
+                    <p class="text-muted">Automatically grade assignments using predefined rubrics and auto-detection tools.</p>
+                    <button class="btn btn-sm btn-outline-light">Set Up</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-info bg-opacity-10 p-3 d-inline-block mb-3">
+                        <i class="bi bi-chat-dots text-info fs-3"></i>
+                    </div>
+                    <h5>Personalized Feedback</h5>
+                    <p class="text-muted">Generate personalized feedback for students based on AI-analysis of submissions.</p>
+                    <button class="btn btn-sm btn-outline-light">Try It</button>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4">
+            <div class="card bg-dark border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 d-inline-block mb-3">
+                        <i class="bi bi-code-square text-warning fs-3"></i>
+                    </div>
+                    <h5>Code Analysis</h5>
+                    <p class="text-muted">Automatically analyze code submissions for quality, style, and correctness.</p>
+                    <button class="btn btn-sm btn-outline-light">Set Up</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Calendar View -->
+    <div class="card bg-dark border-0 mb-4">
+        <div class="card-header bg-dark border-bottom border-secondary d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">June 2025</h5>
+            <div>
+                <button class="btn btn-sm btn-outline-secondary me-2">Today</button>
+                <button class="btn btn-sm btn-outline-secondary">Month</button>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="row g-0 border-bottom border-secondary">
+                <div class="col border-end border-secondary text-center p-2">
+                    <div class="small text-muted">Mon</div>
+                </div>
+                <div class="col border-end border-secondary text-center p-2">
+                    <div class="small text-muted">Tue</div>
+                </div>
+                <div class="col border-end border-secondary text-center p-2">
+                    <div class="small text-muted">Wed</div>
+                </div>
+                <div class="col border-end border-secondary text-center p-2">
+                    <div class="small text-muted">Thu</div>
+                </div>
+                <div class="col border-end border-secondary text-center p-2">
+                    <div class="small text-muted">Fri</div>
+                </div>
+                <div class="col border-end border-secondary text-center p-2">
+                    <div class="small text-muted">Sat</div>
+                </div>
+                <div class="col text-center p-2">
+                    <div class="small text-muted">Sun</div>
+                </div>
+            </div>
+            
+            <!-- Calendar rows - First week -->
+            <div class="row g-0 border-bottom border-secondary" style="min-height: 100px;">
+                {% for i in range(7) %}
+                <div class="col border-end {% if i < 6 %}border-secondary{% endif %} p-2">
+                    {% if i == 0 %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small">1</span>
+                    </div>
+                    {% elif i == 1 %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small">2</span>
+                    </div>
+                    <div class="p-1 bg-primary rounded text-white small mb-1">Database Assignment</div>
+                    {% elif i == 2 %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small">3</span>
+                    </div>
+                    {% elif i == 3 %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small">4</span>
+                    </div>
+                    {% elif i == 4 %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small">5</span>
+                    </div>
+                    <div class="p-1 bg-warning rounded text-dark small mb-1">ML Quiz Due</div>
+                    {% elif i == 5 %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small">6</span>
+                    </div>
+                    {% else %}
+                    <div class="d-flex justify-content-between align-items-center mb-2">
+                        <span class="small">7</span>
+                    </div>
+                    {% endif %}
+                </div>
+                {% endfor %}
+            </div>
+            
+            <!-- Upcoming Events Sidebar -->
+            <div class="position-absolute end-0 top-0 mt-5 me-3" style="width: 300px;">
+                <div class="card bg-dark border-secondary">
+                    <div class="card-header bg-dark border-bottom border-secondary">
+                        <h6 class="mb-0">Upcoming</h6>
+                    </div>
+                    <div class="card-body p-0">
+                        <div class="list-group list-group-flush bg-dark">
+                            <div class="list-group-item bg-dark border-bottom border-secondary p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <h6 class="mb-0">Database Design Project</h6>
+                                    <span class="badge bg-primary">In 2 Days</span>
+                                </div>
+                                <p class="text-muted small mb-0">June 2, 2025 • Database Management</p>
+                            </div>
+                            <div class="list-group-item bg-dark border-bottom border-secondary p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <h6 class="mb-0">Module 5 Quiz</h6>
+                                    <span class="badge bg-warning text-dark">In 5 Days</span>
+                                </div>
+                                <p class="text-muted small mb-0">June 5, 2025 • Machine Learning</p>
+                            </div>
+                            <div class="list-group-item bg-dark border-bottom border-secondary p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <h6 class="mb-0">Security Assessment</h6>
+                                    <span class="badge bg-info">In 7 Days</span>
+                                </div>
+                                <p class="text-muted small mb-0">June 7, 2025 • Web Development</p>
+                            </div>
+                            <div class="list-group-item bg-dark p-3">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <h6 class="mb-0">Final Project</h6>
+                                    <span class="badge bg-danger">In 14 Days</span>
+                                </div>
+                                <p class="text-muted small mb-0">June 14, 2025 • Advanced Algorithms</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Create Assignment Modal -->
+<div class="modal fade" id="createAssignmentModal" tabindex="-1" aria-labelledby="createAssignmentModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content bg-dark">
+            <div class="modal-header border-secondary">
+                <h5 class="modal-title" id="createAssignmentModalLabel">Create New Assignment</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="assignmentForm">
+                    <div class="mb-3">
+                        <label for="assignmentTitle" class="form-label">Assignment Title</label>
+                        <input type="text" class="form-control bg-dark text-light border-secondary" id="assignmentTitle" placeholder="Enter assignment title">
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignmentCourse" class="form-label">Course</label>
+                        <select class="form-select bg-dark text-light border-secondary" id="assignmentCourse">
+                            <option selected disabled>Select Course</option>
+                            {% for course in courses %}
+                            <option value="{{ course.id }}">{{ course.name }}</option>
+                            {% endfor %}
+                            {% if not courses %}
+                            <option value="1">Data Structures</option>
+                            <option value="2">Algorithms</option>
+                            <option value="3">Database Management</option>
+                            <option value="4">Machine Learning</option>
+                            <option value="5">Web Development</option>
+                            {% endif %}
+                        </select>
+                    </div>
+                    <div class="row mb-3">
+                        <div class="col-md-6">
+                            <label for="assignmentStartDate" class="form-label">Start Date</label>
+                            <input type="date" class="form-control bg-dark text-light border-secondary" id="assignmentStartDate">
+                        </div>
+                        <div class="col-md-6">
+                            <label for="assignmentDueDate" class="form-label">Due Date</label>
+                            <input type="date" class="form-control bg-dark text-light border-secondary" id="assignmentDueDate">
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignmentPoints" class="form-label">Total Points</label>
+                        <input type="number" class="form-control bg-dark text-light border-secondary" id="assignmentPoints" placeholder="100">
+                    </div>
+                    <div class="mb-3">
+                        <label for="assignmentDescription" class="form-label">Description</label>
+                        <textarea class="form-control bg-dark text-light border-secondary" id="assignmentDescription" rows="4" placeholder="Enter assignment description and instructions"></textarea>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Submission Type</label>
+                        <div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="submissionType" id="submissionTypeFile" value="file" checked>
+                                <label class="form-check-label" for="submissionTypeFile">File Upload</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="submissionType" id="submissionTypeText" value="text">
+                                <label class="form-check-label" for="submissionTypeText">Text Entry</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="submissionType" id="submissionTypeUrl" value="url">
+                                <label class="form-check-label" for="submissionTypeUrl">URL/Link</label>
+                            </div>
+                            <div class="form-check form-check-inline">
+                                <input class="form-check-input" type="radio" name="submissionType" id="submissionTypeGithub" value="github">
+                                <label class="form-check-label" for="submissionTypeGithub">GitHub Repository</label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="enableGroupSubmission">
+                            <label class="form-check-label" for="enableGroupSubmission">Enable Group Submission</label>
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="enablePeerReview">
+                            <label class="form-check-label" for="enablePeerReview">Enable Peer Review</label>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer border-secondary">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-primary" id="saveAssignmentBtn">Create Assignment</button>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Show create assignment modal
+        document.getElementById('createAssignmentBtn').addEventListener('click', function() {
+            const modal = new bootstrap.Modal(document.getElementById('createAssignmentModal'));
+            modal.show();
+        });
+        
+        // Handle create assignment form submission
+        document.getElementById('saveAssignmentBtn').addEventListener('click', function() {
+            // In a real implementation, this would submit the form data
+            showAlert('Assignment created successfully!', 'success');
+            
+            // Close the modal
+            const modal = bootstrap.Modal.getInstance(document.getElementById('createAssignmentModal'));
+            modal.hide();
+        });
+        
+        // Handle filter button click
+        document.getElementById('filterBtn').addEventListener('click', function() {
+            // In a real implementation, this would filter the assignments
+            showAlert('Filters applied!', 'info');
+        });
+        
+        // Utility function to show alerts
+        function showAlert(message, type = 'info') {
+            const alertContainer = document.createElement('div');
+            alertContainer.className = `alert alert-${type} alert-dismissible fade show position-fixed top-0 end-0 m-3`;
+            alertContainer.setAttribute('role', 'alert');
+            alertContainer.innerHTML = `
+                ${message}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            `;
+            document.body.appendChild(alertContainer);
+            
+            // Auto-dismiss after 5 seconds
+            setTimeout(() => {
+                const bsAlert = new bootstrap.Alert(alertContainer);
+                bsAlert.close();
+            }, 5000);
+        }
+    });
+</script>
+{% endblock %}

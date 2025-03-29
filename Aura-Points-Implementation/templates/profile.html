@@ -1,0 +1,329 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart Academic Assistant - Profile{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-body">
+                <div class="row align-items-center">
+                    <div class="col-md-2 text-center">
+                        <div class="profile-avatar mb-3">
+                            <i class="fas fa-user"></i>
+                        </div>
+                    </div>
+                    <div class="col-md-7">
+                        <h2 class="mb-1">{{ user.username }}</h2>
+                        <p class="text-muted mb-2">{{ user.email }}</p>
+                        <div class="mb-2">
+                            <span class="badge bg-primary">{{ user.role|capitalize }}</span>
+                            {% if user.role == 'student' %}
+                                <span class="badge bg-info">{{ user.academic_level|capitalize }}</span>
+                            {% endif %}
+                        </div>
+                        <div>
+                            {% if user.role == 'student' %}
+                                <h6 class="mb-2">Interests:</h6>
+                                {% for interest in user.interests %}
+                                    <span class="badge bg-secondary me-1 mb-1">{{ interest }}</span>
+                                {% endfor %}
+                            {% elif user.role == 'faculty' %}
+                                <h6 class="mb-2">Research Areas:</h6>
+                                {% for area in user.research_areas %}
+                                    <span class="badge bg-secondary me-1 mb-1">{{ area }}</span>
+                                {% endfor %}
+                            {% endif %}
+                        </div>
+                    </div>
+                    <div class="col-md-3 text-md-end mt-3 mt-md-0">
+                        <button class="btn btn-primary mb-2">
+                            <i class="fas fa-edit me-1"></i>
+                            Edit Profile
+                        </button>
+                        <button class="btn btn-outline-secondary">
+                            <i class="fas fa-cog me-1"></i>
+                            Settings
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-graduation-cap me-2"></i>
+                    Academic Summary
+                </h5>
+            </div>
+            <div class="card-body">
+                <div class="row text-center">
+                    <div class="col-6 mb-3">
+                        <h2 class="mb-0">{{ completed_courses|length }}</h2>
+                        <small class="text-muted">Courses Completed</small>
+                    </div>
+                    <div class="col-6 mb-3">
+                        <h2 class="mb-0">{{ in_progress_courses|length }}</h2>
+                        <small class="text-muted">Courses In Progress</small>
+                    </div>
+                </div>
+                <hr>
+                <canvas id="skillsRadarChart" width="100%" height="250"></canvas>
+            </div>
+        </div>
+        
+        {% if user.role == 'faculty' %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-clock me-2"></i>
+                    Office Hours
+                </h5>
+            </div>
+            <div class="card-body">
+                <ul class="list-group list-group-flush">
+                    {% for hours in user.office_hours %}
+                        <li class="list-group-item px-0">
+                            <i class="fas fa-calendar-day me-2 text-primary"></i>
+                            {{ hours }}
+                        </li>
+                    {% endfor %}
+                </ul>
+                <button class="btn btn-sm btn-outline-primary mt-3">
+                    <i class="fas fa-edit me-1"></i>
+                    Update Office Hours
+                </button>
+            </div>
+        </div>
+        {% else %}
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-chart-line me-2"></i>
+                    Learning Progress
+                </h5>
+            </div>
+            <div class="card-body">
+                <h6 class="mb-2">Computer Science</h6>
+                <div class="progress mb-3" style="height: 10px;">
+                    <div class="progress-bar bg-success" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                
+                <h6 class="mb-2">Data Analysis</h6>
+                <div class="progress mb-3" style="height: 10px;">
+                    <div class="progress-bar bg-info" role="progressbar" style="width: 45%;" aria-valuenow="45" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+                
+                <h6 class="mb-2">Machine Learning</h6>
+                <div class="progress mb-3" style="height: 10px;">
+                    <div class="progress-bar bg-primary" role="progressbar" style="width: 30%;" aria-valuenow="30" aria-valuemin="0" aria-valuemax="100"></div>
+                </div>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <ul class="nav nav-tabs card-header-tabs" id="profileTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="courses-tab" data-bs-toggle="tab" data-bs-target="#courses" type="button" role="tab" aria-controls="courses" aria-selected="true">
+                            <i class="fas fa-book me-1"></i>
+                            Courses
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="research-tab" data-bs-toggle="tab" data-bs-target="#research" type="button" role="tab" aria-controls="research" aria-selected="false">
+                            <i class="fas fa-search me-1"></i>
+                            Research
+                        </button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="schedule-tab" data-bs-toggle="tab" data-bs-target="#schedule" type="button" role="tab" aria-controls="schedule" aria-selected="false">
+                            <i class="fas fa-calendar-alt me-1"></i>
+                            Schedule
+                        </button>
+                    </li>
+                </ul>
+            </div>
+            <div class="card-body">
+                <div class="tab-content" id="profileTabContent">
+                    <div class="tab-pane fade show active" id="courses" role="tabpanel" aria-labelledby="courses-tab">
+                        <h5 class="mb-3">Course History</h5>
+                        <div class="table-responsive">
+                            <table class="table table-hover">
+                                <thead>
+                                    <tr>
+                                        <th>Course</th>
+                                        <th>Level</th>
+                                        <th>Status</th>
+                                        <th>Actions</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for course in completed_courses %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ course.title }}</strong>
+                                            <div class="small text-muted">{{ course.description|truncate(50) }}</div>
+                                        </td>
+                                        <td><span class="badge bg-secondary">{{ course.level }}</span></td>
+                                        <td><span class="badge bg-success">Completed</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                    
+                                    {% for course in in_progress_courses %}
+                                    <tr>
+                                        <td>
+                                            <strong>{{ course.title }}</strong>
+                                            <div class="small text-muted">{{ course.description|truncate(50) }}</div>
+                                        </td>
+                                        <td><span class="badge bg-secondary">{{ course.level }}</span></td>
+                                        <td><span class="badge bg-primary">In Progress</span></td>
+                                        <td>
+                                            <button class="btn btn-sm btn-outline-primary">View</button>
+                                        </td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                    
+                    <div class="tab-pane fade" id="research" role="tabpanel" aria-labelledby="research-tab">
+                        {% if user.role == 'faculty' %}
+                            <h5 class="mb-3">Published Papers</h5>
+                            <div class="list-group">
+                                {% for paper in user_papers %}
+                                <div class="list-group-item list-group-item-action flex-column align-items-start">
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <h5 class="mb-1">{{ paper.title }}</h5>
+                                        <small>Citations: {{ paper.citations }}</small>
+                                    </div>
+                                    <p class="mb-1">
+                                        <strong>Journal:</strong> {{ paper.journal }} ({{ paper.publication_date }})
+                                    </p>
+                                    <p class="mb-1">{{ paper.abstract|truncate(200) }}</p>
+                                    <div class="mt-2">
+                                        <button class="btn btn-sm btn-outline-primary">
+                                            <i class="fas fa-file-alt me-1"></i> View Full Paper
+                                        </button>
+                                        <button class="btn btn-sm btn-outline-secondary">
+                                            <i class="fas fa-chart-line me-1"></i> Impact Metrics
+                                        </button>
+                                    </div>
+                                </div>
+                                {% else %}
+                                <div class="alert alert-info">
+                                    <i class="fas fa-info-circle me-2"></i>
+                                    No published papers found.
+                                </div>
+                                {% endfor %}
+                            </div>
+                        {% else %}
+                            <h5 class="mb-3">Saved Research Papers</h5>
+                            <div class="alert alert-info">
+                                <i class="fas fa-info-circle me-2"></i>
+                                You haven't saved any research papers yet. Start by exploring the Research Discovery section.
+                            </div>
+                            <div class="text-center mt-3">
+                                <a href="{{ url_for('research') }}" class="btn btn-primary">
+                                    <i class="fas fa-search me-1"></i>
+                                    Explore Research
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                    
+                    <div class="tab-pane fade" id="schedule" role="tabpanel" aria-labelledby="schedule-tab">
+                        <h5 class="mb-3">Upcoming Meetings</h5>
+                        <div id="profileCalendar"></div>
+                        <div class="text-center mt-3">
+                            <a href="{{ url_for('scheduler') }}" class="btn btn-primary">
+                                <i class="fas fa-calendar-alt me-1"></i>
+                                Full Calendar
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Skills radar chart
+        const ctx = document.getElementById('skillsRadarChart').getContext('2d');
+        
+        const skillsRadarChart = new Chart(ctx, {
+            type: 'radar',
+            data: {
+                labels: ['Programming', 'Data Analysis', 'Machine Learning', 'Research', 'Communication'],
+                datasets: [{
+                    label: 'Current Skills',
+                    data: [80, 65, 60, 75, 70],
+                    backgroundColor: 'rgba(13, 110, 253, 0.2)',
+                    borderColor: 'rgba(13, 110, 253, 1)',
+                    pointBackgroundColor: 'rgba(13, 110, 253, 1)',
+                    pointBorderColor: '#fff',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(13, 110, 253, 1)'
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 100,
+                        ticks: {
+                            display: false
+                        }
+                    }
+                },
+                elements: {
+                    line: {
+                        tension: 0.1
+                    }
+                }
+            }
+        });
+        
+        // Initialize mini calendar on schedule tab
+        document.getElementById('schedule-tab').addEventListener('shown.bs.tab', function() {
+            if (!window.profileCalendar) {
+                const calendarEl = document.getElementById('profileCalendar');
+                
+                window.profileCalendar = new FullCalendar.Calendar(calendarEl, {
+                    initialView: 'listWeek',
+                    headerToolbar: {
+                        left: '',
+                        center: 'title',
+                        right: ''
+                    },
+                    height: 300,
+                    events: '/api/scheduler/meetings',
+                    eventTimeFormat: {
+                        hour: '2-digit',
+                        minute: '2-digit',
+                        meridiem: 'short'
+                    }
+                });
+                
+                window.profileCalendar.render();
+            }
+        });
+    });
+</script>
+{% endblock %}

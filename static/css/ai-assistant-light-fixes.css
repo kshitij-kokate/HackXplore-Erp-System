@@ -1,0 +1,116 @@
+/* 
+ * AI Assistant Light Theme Fixes 
+ * This CSS file contains fixes for the AI Assistant page when using the light theme
+ */
+
+/* Card background and border fixes */
+.card.bg-dark {
+    background-color: #fff !important;
+    border: 1px solid rgba(0, 0, 0, 0.125) !important;
+}
+
+.card-header.bg-dark {
+    background-color: #f8f9fa !important;
+    color: #212529 !important;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.125) !important;
+}
+
+/* Form controls */
+.form-select.bg-dark, 
+.form-control.bg-dark,
+.form-select.bg-dark option {
+    background-color: #fff !important;
+    color: #212529 !important;
+    border-color: #ced4da !important;
+}
+
+/* List group items */
+.list-group-flush.bg-dark {
+    background-color: #fff !important;
+}
+
+.list-group-item.bg-dark {
+    background-color: #fff !important;
+    color: #212529 !important;
+    border-color: rgba(0, 0, 0, 0.125) !important;
+}
+
+.list-group-item.list-group-item-action.bg-dark:hover {
+    background-color: #f8f9fa !important;
+}
+
+/* Border fixes */
+.border-secondary {
+    border-color: #dee2e6 !important;
+}
+
+/* Text color fixes */
+.text-light {
+    color: #212529 !important;
+}
+
+.text-muted {
+    color: #6c757d !important;
+}
+
+/* Button fixes */
+.btn-outline-light {
+    color: #212529;
+    border-color: #ced4da;
+}
+
+.btn-outline-light:hover {
+    color: #212529;
+    background-color: #f8f9fa;
+    border-color: #ced4da;
+}
+
+.btn-outline-secondary {
+    color: #6c757d;
+    border-color: #6c757d;
+}
+
+/* Chat message styling */
+.chat-message-content .card.bg-primary.bg-opacity-10 {
+    background-color: rgba(13, 110, 253, 0.1) !important;
+}
+
+.chat-message-content .card.bg-secondary.bg-opacity-10 {
+    background-color: rgba(108, 117, 125, 0.1) !important;
+}
+
+/* Modal styling */
+.modal-content.bg-dark {
+    background-color: #fff !important;
+    color: #212529 !important;
+}
+
+.btn-close-white {
+    filter: none !important;
+}
+
+/* Chat avatars */
+.chat-avatar.bg-primary {
+    background-color: #0d6efd !important;
+}
+
+.chat-avatar.bg-secondary {
+    background-color: #6c757d !important;
+}
+
+/* Typing indicator */
+.typing-indicator {
+    background-color: #fff !important;
+}
+
+.typing-indicator .dot {
+    background-color: #6c757d !important;
+}
+
+/* Quiz generator modal */
+#quizGeneratorModal .form-control,
+#quizGeneratorModal .form-select {
+    background-color: #fff !important;
+    color: #212529 !important;
+    border-color: #ced4da !important;
+}

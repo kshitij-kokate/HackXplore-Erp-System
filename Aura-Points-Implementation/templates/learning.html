@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+
+{% block title %}Smart Academic Assistant - Learning Paths{% endblock %}
+
+{% block content %}
+<div class="row mb-4">
+    <div class="col-12">
+        <h2 class="mb-3">
+            <i class="fas fa-book me-2"></i>
+            Adaptive Learning Paths
+        </h2>
+        <p class="lead">
+            Discover personalized course recommendations based on your academic history, interests, and learning patterns.
+        </p>
+    </div>
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-4">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-graduation-cap me-2"></i>
+                    Academic Progress
+                </h5>
+            </div>
+            <div class="card-body">
+                <canvas id="progressChart" width="100%" height="200"></canvas>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-list-check me-2"></i>
+                    Courses in Progress
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if in_progress_courses %}
+                    <div class="list-group list-group-flush">
+                        {% for course in in_progress_courses %}
+                            <div class="list-group-item px-0">
+                                <h6 class="mb-1">{{ course.title }}</h6>
+                                <div class="progress mb-2" style="height: 6px;">
+                                    <div class="progress-bar" role="progressbar" style="width: 65%;" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                                </div>
+                                <small class="text-muted">
+                                    <span class="badge bg-info me-1">{{ course.level }}</span>
+                                    65% Complete
+                                </small>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">You are not currently enrolled in any courses.</p>
+                {% endif %}
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-check-circle me-2"></i>
+                    Completed Courses
+                </h5>
+            </div>
+            <div class="card-body">
+                {% if completed_courses %}
+                    <div class="list-group list-group-flush">
+                        {% for course in completed_courses %}
+                            <div class="list-group-item px-0">
+                                <h6 class="mb-1">{{ course.title }}</h6>
+                                <small class="text-muted">
+                                    <span class="badge bg-success me-1">Completed</span>
+                                    <span class="badge bg-secondary me-1">{{ course.level }}</span>
+                                </small>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <p class="text-muted mb-0">You haven't completed any courses yet.</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <div class="col-md-8">
+        <div class="card mb-4">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-star me-2"></i>
+                    Personalized Course Recommendations
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    These recommendations are based on your academic history, interests, and learning patterns.
+                </p>
+                
+                <div id="learning-recommendations">
+                    <div class="d-flex justify-content-center my-4">
+                        <div class="spinner-border text-primary" role="status">
+                            <span class="visually-hidden">Loading...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card mb-4">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-level-up-alt me-2"></i>
+                    Next Level Courses
+                </h5>
+                <button id="next-level-btn" class="btn btn-sm btn-primary">
+                    <i class="fas fa-sync-alt me-1"></i>
+                    Refresh
+                </button>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    Based on your completed courses, here are the logical next steps for your learning journey.
+                </p>
+                
+                <div id="next-level-courses">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Click the refresh button to load next level courses based on your completed prerequisites.
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="card">
+            <div class="card-header">
+                <h5 class="card-title mb-0">
+                    <i class="fas fa-puzzle-piece me-2"></i>
+                    Fill Your Skill Gaps
+                </h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">
+                    Need specific skills? Enter the skills you want to develop, and we'll recommend relevant courses.
+                </p>
+                
+                <form id="skill-gap-form" class="mb-4">
+                    <div class="row g-3">
+                        <div class="col-md-8">
+                            <input type="text" id="desired-skills" class="form-control" placeholder="e.g., Python, Data Visualization, Machine Learning (comma-separated)" required>
+                        </div>
+                        <div class="col-md-4">
+                            <button type="submit" class="btn btn-primary w-100">
+                                <i class="fas fa-search me-1"></i>
+                                Find Courses
+                            </button>
+                        </div>
+                    </div>
+                </form>
+                
+                <div id="skill-gap-recommendations">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Enter the skills you want to learn to see course recommendations.
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/learning.js') }}"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Course progress chart
+        const ctx = document.getElementById('progressChart').getContext('2d');
+        
+        const completedCount = {{ completed_courses|length }};
+        const inProgressCount = {{ in_progress_courses|length }};
+        
+        const progressChart = new Chart(ctx, {
+            type: 'doughnut',
+            data: {
+                labels: ['Completed', 'In Progress', 'Planned'],
+                datasets: [{
+                    data: [completedCount, inProgressCount, 3],
+                    backgroundColor: [
+                        'rgba(40, 167, 69, 0.8)',
+                        'rgba(0, 123, 255, 0.8)',
+                        'rgba(108, 117, 125, 0.8)'
+                    ],
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: {
+                        position: 'bottom',
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

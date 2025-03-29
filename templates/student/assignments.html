@@ -1,0 +1,344 @@
+{% extends "dashboard_layout.html" %}
+
+{% block title %}My Assignments - CampusIQ{% endblock %}
+
+{% block content %}
+<div class="container-fluid py-3">
+    <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2 class="mb-0">My Assignments</h2>
+        <div>
+            <button class="btn btn-outline-light me-2">
+                <i class="fas fa-filter"></i> Filter
+            </button>
+            <button class="btn btn-outline-light">
+                <i class="fas fa-sort"></i> Sort
+            </button>
+        </div>
+    </div>
+
+    <!-- Assignment Status Overview -->
+    <div class="row mb-4">
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="card bg-dark border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-block mb-3">
+                        <i class="fas fa-hourglass-half text-primary fs-3"></i>
+                    </div>
+                    <h5>Pending</h5>
+                    <h2 class="mb-0">5</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="card bg-dark border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-success bg-opacity-10 p-3 d-inline-block mb-3">
+                        <i class="fas fa-check-circle text-success fs-3"></i>
+                    </div>
+                    <h5>Completed</h5>
+                    <h2 class="mb-0">12</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3 mb-md-0">
+            <div class="card bg-dark border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-warning bg-opacity-10 p-3 d-inline-block mb-3">
+                        <i class="fas fa-exclamation-circle text-warning fs-3"></i>
+                    </div>
+                    <h5>Due Soon</h5>
+                    <h2 class="mb-0">3</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="card bg-dark border-0 h-100">
+                <div class="card-body text-center">
+                    <div class="rounded-circle bg-info bg-opacity-10 p-3 d-inline-block mb-3">
+                        <i class="fas fa-graduation-cap text-info fs-3"></i>
+                    </div>
+                    <h5>Average Grade</h5>
+                    <h2 class="mb-0">88.5%</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Active Assignments -->
+    <div class="card bg-dark border-0 mb-4">
+        <div class="card-header bg-dark border-bottom border-secondary d-flex justify-content-between align-items-center">
+            <h5 class="mb-0">Active Assignments</h5>
+            <div class="form-check form-switch">
+                <input class="form-check-input" type="checkbox" id="showPastAssignments">
+                <label class="form-check-label" for="showPastAssignments">Show Past Assignments</label>
+            </div>
+        </div>
+        <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+                <!-- Assignment 1 -->
+                <div class="list-group-item bg-dark border-bottom border-secondary p-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="mb-1">Data Structures Final Project</h5>
+                            <div class="d-flex flex-wrap align-items-center mb-2">
+                                <span class="badge bg-primary me-2 mb-1">Data Structures</span>
+                                <span class="badge bg-danger me-2 mb-1">Due: April 15, 2025</span>
+                                <span class="badge bg-warning mb-1">2 days left</span>
+                            </div>
+                            <p class="mb-0 text-muted">Implement a B-tree data structure with insertion, deletion, and search operations. Include performance analysis.</p>
+                        </div>
+                        <div class="col-md-4 mt-3 mt-md-0 text-md-end">
+                            <div class="mb-2">
+                                <div class="progress bg-dark mb-1" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: 70%;"></div>
+                                </div>
+                                <small class="text-muted">70% Complete</small>
+                            </div>
+                            <button class="btn btn-primary me-2">Continue Working</button>
+                            <button class="btn btn-outline-light">View Details</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Assignment 2 -->
+                <div class="list-group-item bg-dark border-bottom border-secondary p-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="mb-1">Database Schema Design</h5>
+                            <div class="d-flex flex-wrap align-items-center mb-2">
+                                <span class="badge bg-primary me-2 mb-1">Database Management</span>
+                                <span class="badge bg-danger me-2 mb-1">Due: April 20, 2025</span>
+                                <span class="badge bg-warning mb-1">7 days left</span>
+                            </div>
+                            <p class="mb-0 text-muted">Design a normalized database schema for a university management system with at least 10 entities.</p>
+                        </div>
+                        <div class="col-md-4 mt-3 mt-md-0 text-md-end">
+                            <div class="mb-2">
+                                <div class="progress bg-dark mb-1" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: 40%;"></div>
+                                </div>
+                                <small class="text-muted">40% Complete</small>
+                            </div>
+                            <button class="btn btn-primary me-2">Continue Working</button>
+                            <button class="btn btn-outline-light">View Details</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Assignment 3 -->
+                <div class="list-group-item bg-dark border-bottom border-secondary p-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="mb-1">Algorithm Complexity Analysis</h5>
+                            <div class="d-flex flex-wrap align-items-center mb-2">
+                                <span class="badge bg-primary me-2 mb-1">Algorithms</span>
+                                <span class="badge bg-danger me-2 mb-1">Due: April 25, 2025</span>
+                                <span class="badge bg-success mb-1">12 days left</span>
+                            </div>
+                            <p class="mb-0 text-muted">Analyze the time and space complexity of sorting algorithms. Implement optimizations for merge sort and quick sort.</p>
+                        </div>
+                        <div class="col-md-4 mt-3 mt-md-0 text-md-end">
+                            <div class="mb-2">
+                                <div class="progress bg-dark mb-1" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: 20%;"></div>
+                                </div>
+                                <small class="text-muted">20% Complete</small>
+                            </div>
+                            <button class="btn btn-primary me-2">Continue Working</button>
+                            <button class="btn btn-outline-light">View Details</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Assignment 4 -->
+                <div class="list-group-item bg-dark border-bottom border-secondary p-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="mb-1">Machine Learning Project</h5>
+                            <div class="d-flex flex-wrap align-items-center mb-2">
+                                <span class="badge bg-primary me-2 mb-1">Artificial Intelligence</span>
+                                <span class="badge bg-danger me-2 mb-1">Due: April 30, 2025</span>
+                                <span class="badge bg-success mb-1">17 days left</span>
+                            </div>
+                            <p class="mb-0 text-muted">Implement a neural network for image classification. Compare performance with traditional ML algorithms.</p>
+                        </div>
+                        <div class="col-md-4 mt-3 mt-md-0 text-md-end">
+                            <div class="mb-2">
+                                <div class="progress bg-dark mb-1" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: 10%;"></div>
+                                </div>
+                                <small class="text-muted">10% Complete</small>
+                            </div>
+                            <button class="btn btn-primary me-2">Continue Working</button>
+                            <button class="btn btn-outline-light">View Details</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Assignment 5 -->
+                <div class="list-group-item bg-dark border-bottom border-secondary p-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="mb-1">Web Development Final Project</h5>
+                            <div class="d-flex flex-wrap align-items-center mb-2">
+                                <span class="badge bg-primary me-2 mb-1">Web Development</span>
+                                <span class="badge bg-danger me-2 mb-1">Due: May 10, 2025</span>
+                                <span class="badge bg-success mb-1">27 days left</span>
+                            </div>
+                            <p class="mb-0 text-muted">Create a full-stack web application using modern frameworks. Implement user authentication and real-time features.</p>
+                        </div>
+                        <div class="col-md-4 mt-3 mt-md-0 text-md-end">
+                            <div class="mb-2">
+                                <div class="progress bg-dark mb-1" style="height: 8px;">
+                                    <div class="progress-bar bg-success" style="width: 5%;"></div>
+                                </div>
+                                <small class="text-muted">5% Complete</small>
+                            </div>
+                            <button class="btn btn-primary me-2">Continue Working</button>
+                            <button class="btn btn-outline-light">View Details</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Completed Assignments -->
+    <div class="card bg-dark border-0 mb-4">
+        <div class="card-header bg-dark border-bottom border-secondary">
+            <h5 class="mb-0">Recently Completed Assignments</h5>
+        </div>
+        <div class="card-body p-0">
+            <div class="list-group list-group-flush">
+                <!-- Completed Assignment 1 -->
+                <div class="list-group-item bg-dark border-bottom border-secondary p-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="mb-1">Python Programming Basics</h5>
+                            <div class="d-flex flex-wrap align-items-center mb-2">
+                                <span class="badge bg-primary me-2 mb-1">Programming Fundamentals</span>
+                                <span class="badge bg-secondary me-2 mb-1">Completed: March 20, 2025</span>
+                                <span class="badge bg-success mb-1">Grade: 92%</span>
+                            </div>
+                            <p class="mb-0 text-muted">Feedback: Excellent work on the recursion problems. Your code is clean and well-documented.</p>
+                        </div>
+                        <div class="col-md-4 mt-3 mt-md-0 text-md-end">
+                            <button class="btn btn-outline-light me-2">View Feedback</button>
+                            <button class="btn btn-outline-light">View Submission</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Completed Assignment 2 -->
+                <div class="list-group-item bg-dark border-bottom border-secondary p-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="mb-1">Data Structure Implementation</h5>
+                            <div class="d-flex flex-wrap align-items-center mb-2">
+                                <span class="badge bg-primary me-2 mb-1">Data Structures</span>
+                                <span class="badge bg-secondary me-2 mb-1">Completed: March 15, 2025</span>
+                                <span class="badge bg-success mb-1">Grade: 88%</span>
+                            </div>
+                            <p class="mb-0 text-muted">Feedback: Good implementation of linked lists and trees. Consider optimizing your binary search tree insertion.</p>
+                        </div>
+                        <div class="col-md-4 mt-3 mt-md-0 text-md-end">
+                            <button class="btn btn-outline-light me-2">View Feedback</button>
+                            <button class="btn btn-outline-light">View Submission</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Completed Assignment 3 -->
+                <div class="list-group-item bg-dark border-bottom border-secondary p-3">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h5 class="mb-1">Database Normalization</h5>
+                            <div class="d-flex flex-wrap align-items-center mb-2">
+                                <span class="badge bg-primary me-2 mb-1">Database Management</span>
+                                <span class="badge bg-secondary me-2 mb-1">Completed: March 10, 2025</span>
+                                <span class="badge bg-success mb-1">Grade: 95%</span>
+                            </div>
+                            <p class="mb-0 text-muted">Feedback: Excellent work on normalizing the complex e-commerce database. Your entity-relationship diagrams are clear and accurate.</p>
+                        </div>
+                        <div class="col-md-4 mt-3 mt-md-0 text-md-end">
+                            <button class="btn btn-outline-light me-2">View Feedback</button>
+                            <button class="btn btn-outline-light">View Submission</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- AI Assignment Help -->
+    <div class="card bg-dark border-0 mb-4">
+        <div class="card-header bg-dark border-bottom border-secondary">
+            <h5 class="mb-0">AI Assignment Help</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="card bg-dark border-0 h-100">
+                        <div class="card-body text-center">
+                            <div class="rounded-circle bg-primary bg-opacity-10 p-3 d-inline-block mb-3">
+                                <i class="fas fa-lightbulb text-primary fs-3"></i>
+                            </div>
+                            <h5>Concept Explanations</h5>
+                            <p class="text-muted">Get clear explanations of difficult concepts related to your assignments.</p>
+                            <button class="btn btn-outline-light">Get Help</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4 mb-3 mb-md-0">
+                    <div class="card bg-dark border-0 h-100">
+                        <div class="card-body text-center">
+                            <div class="rounded-circle bg-success bg-opacity-10 p-3 d-inline-block mb-3">
+                                <i class="fas fa-code text-success fs-3"></i>
+                            </div>
+                            <h5>Code Reviews</h5>
+                            <p class="text-muted">Submit your code for AI-powered reviews and optimization suggestions.</p>
+                            <button class="btn btn-outline-light">Submit Code</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <div class="card bg-dark border-0 h-100">
+                        <div class="card-body text-center">
+                            <div class="rounded-circle bg-warning bg-opacity-10 p-3 d-inline-block mb-3">
+                                <i class="fas fa-calendar-alt text-warning fs-3"></i>
+                            </div>
+                            <h5>Study Planner</h5>
+                            <p class="text-muted">Generate personalized study plans based on your assignment deadlines.</p>
+                            <button class="btn btn-outline-light">Create Plan</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Filter functionality
+        const filterBtn = document.getElementById('filterBtn');
+        if (filterBtn) {
+            filterBtn.addEventListener('click', function() {
+                // Implement filtering logic here
+                console.log('Filtering assignments...');
+            });
+        }
+        
+        // Toggle past assignments
+        const showPastAssignments = document.getElementById('showPastAssignments');
+        if (showPastAssignments) {
+            showPastAssignments.addEventListener('change', function() {
+                console.log('Toggle past assignments:', this.checked);
+                // Implement toggle logic here
+            });
+        }
+    });
+</script>
+{% endblock %}
